@@ -94,7 +94,7 @@ def check_password():
     clave = st.text_input("Contraseña", type="password")
 
     if st.button("Entrar"):
-        if usuario == "darcy" and clave == "natural2026":
+        if usuario == "darcy" and clave == "Darcy0105":
             st.session_state.autenticado = True
             st.rerun()
         else:
