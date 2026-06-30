@@ -81,6 +81,28 @@ def registrar_cliente_si_nuevo(sheet, nombre, telefono):
         clientes_ws.append_row([nombre, telefono])
 
 # ── App ────────────────────────────────────────────────────────────────────────
+# ── Login ──────────────────────────────────────────────────────────────────────
+def check_password():
+    if "autenticado" not in st.session_state:
+        st.session_state.autenticado = False
+
+    if st.session_state.autenticado:
+        return True
+
+    st.markdown("## 🌿 Darcy — Acceso privado")
+    usuario = st.text_input("Usuario")
+    clave = st.text_input("Contraseña", type="password")
+
+    if st.button("Entrar"):
+        if usuario == "darcy" and clave == "natural2026":
+            st.session_state.autenticado = True
+            st.rerun()
+        else:
+            st.error("Usuario o contraseña incorrectos.")
+    return False
+
+if not check_password():
+    st.stop()
 sheet = conectar_sheets()
 
 st.sidebar.markdown("## 🌿 Darcy")
