@@ -166,7 +166,7 @@ try:
 except:
     st.sidebar.markdown("## 🌿 Darcy")
 
-nombre_usuario = "Denstron" if st.session_state.usuario_actual == "Darcy" else "Daniel"
+nombre_usuario = "Darcy" if st.session_state.usuario_actual == "Darcy" else "Daniel"
 st.sidebar.markdown(f"**Hola, {nombre_usuario} 👋**")
 st.sidebar.markdown("---")
 
