@@ -3,6 +3,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime
 import pandas as pd
+import base64
 
 # ── Configuración ──────────────────────────────────────────────────────────────
 SCOPES = [
@@ -18,20 +19,71 @@ st.markdown("""
 <style>
     [data-testid="stAppViewContainer"] { background-color: #fff8f9; }
     [data-testid="stSidebar"] { background-color: #fce4ec; }
-    [data-testid="stSidebar"] * { color: #880e4f; }
-    h1 { color: #c2185b !important; }
-    h2, h3 { color: #ad1457 !important; }
+    [data-testid="stSidebar"] * { color: #880e4f !important; }
+    h1, h2, h3 { color: #c2185b !important; }
     p, span, div, label { color: #333333 !important; }
+    [data-testid="stMetricValue"] { color: #c2185b !important; font-weight: bold !important; }
+    [data-testid="stMetricLabel"] { color: #555555 !important; }
     .stButton > button {
-        background-color: #e91e8c;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-weight: bold;
+        background-color: #e91e8c !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-weight: bold !important;
+        padding: 8px 20px !important;
     }
-    .stButton > button:hover { background-color: #c2185b; }
+    .stButton > button:hover { background-color: #c2185b !important; }
+    [data-testid="stForm"] {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid #f8bbd0;
+        box-shadow: 0 2px 8px rgba(233,30,140,0.08);
+    }
+    .stSelectbox label, .stTextInput label, .stNumberInput label { color: #880e4f !important; font-weight: 600 !important; }
+    [data-testid="stSuccess"] { background-color: #e8f5e9 !important; }
+    [data-testid="stInfo"] { background-color: #fce4ec !important; }
+    .stRadio label { color: #880e4f !important; font-weight: 500 !important; }
+    .stExpander { border: 1px solid #f8bbd0 !important; border-radius: 8px !important; }
 </style>
 """, unsafe_allow_html=True)
+
+# ── Login ──────────────────────────────────────────────────────────────────────
+def check_password():
+    if "autenticado" not in st.session_state:
+        st.session_state.autenticado = False
+
+    if st.session_state.autenticado:
+        return True
+
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        try:
+            st.image("LOGO.jpeg", use_container_width=True)
+        except:
+            st.markdown("## 🌿 Darcy")
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("### Acceso privado")
+
+        USUARIOS = {
+            "daniel": "daniel2026",
+            "darcy": "natural2026"
+        }
+
+        usuario = st.text_input("Usuario")
+        clave = st.text_input("Contraseña", type="password")
+
+        if st.button("Entrar", use_container_width=True):
+            if usuario in USUARIOS and clave == USUARIOS[usuario]:
+                st.session_state.autenticado = True
+                st.rerun()
+            else:
+                st.error("Usuario o contraseña incorrectos.")
+    return False
+
+if not check_password():
+    st.stop()
 
 # ── Conexión Google Sheets ─────────────────────────────────────────────────────
 @st.cache_resource
@@ -81,37 +133,13 @@ def registrar_cliente_si_nuevo(sheet, nombre, telefono):
         clientes_ws.append_row([nombre, telefono])
 
 # ── App ────────────────────────────────────────────────────────────────────────
-# ── Login ──────────────────────────────────────────────────────────────────────
-def check_password():
-    if "autenticado" not in st.session_state:
-        st.session_state.autenticado = False
-
-    if st.session_state.autenticado:
-        return True
-
-    st.markdown("## 🌿 Darcy — Acceso privado")
-    usuario = st.text_input("Usuario")
-    clave = st.text_input("Contraseña", type="password")
-
-    USUARIOS = {
-        "Denstron": "danieL0105",
-        "Darcy": "Darcy010"
-    }
-
-    if st.button("Entrar"):
-        if usuario in USUARIOS and clave == USUARIOS[usuario]:
-            st.session_state.autenticado = True
-            st.rerun()
-        else:
-            st.error("Usuario o contraseña incorrectos.")
-    return False
-
-if not check_password():
-    st.stop()
 sheet = conectar_sheets()
 
-st.sidebar.markdown("## 🌿 Darcy")
-st.sidebar.markdown("*Desodorante Natural*")
+try:
+    st.sidebar.image("LOGO.jpeg", use_container_width=True)
+except:
+    st.sidebar.markdown("## 🌿 Darcy")
+
 st.sidebar.markdown("---")
 
 menu = st.sidebar.radio("Menú", [
@@ -123,23 +151,24 @@ menu = st.sidebar.radio("Menú", [
     "⏳ Pedidos Pendientes"
 ])
 
+st.sidebar.markdown("---")
+if st.sidebar.button("🚪 Cerrar sesión"):
+    st.session_state.autenticado = False
+    st.rerun()
+
 PRODUCTOS = ["Tarro mediano", "Tarrito spray"]
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 📊 DASHBOARD
 # ══════════════════════════════════════════════════════════════════════════════
 if menu == "📊 Dashboard":
-    st.title("🌿 Darcy — Panel de Control")
+    st.title("📊 Panel de Control")
 
     config = get_config(sheet)
     ventas = get_ventas(sheet)
     compras = get_compras(sheet)
     inventario = get_inventario(sheet)
 
-    precios_venta = {
-        "Tarro mediano": config["precio_tarro_mediano"],
-        "Tarrito spray": config["precio_tarrito_spray"]
-    }
     precios_costo = {
         "Tarro mediano": config["costo_tarro_mediano"],
         "Tarrito spray": config["costo_tarrito_spray"]
@@ -164,7 +193,7 @@ if menu == "📊 Dashboard":
     total_invertido = sum(
         int(c["cantidad"]) * float(c["precio_unitario"]) + float(c["gasto_envio"])
         for c in compras
-    )
+    ) if compras else 0
 
     reinvertir = total_ganancia * (config["porcentaje_reinversion"] / 100)
     libre = total_ganancia - reinvertir
@@ -176,17 +205,17 @@ if menu == "📊 Dashboard":
     col4.metric("💰 Total invertido", f"${total_invertido:,.0f}")
 
     st.markdown("---")
-
     col5, col6 = st.columns(2)
     col5.metric(f"🔄 Reinvertir ({int(config['porcentaje_reinversion'])}%)", f"${reinvertir:,.0f}")
     col6.metric("🎉 Ganancia libre", f"${libre:,.0f}")
 
     st.markdown("---")
-
     st.subheader("📦 Inventario actual")
     cols = st.columns(len(inventario))
     for i, item in enumerate(inventario):
-        cols[i].metric(item["producto"], f"{item['cantidad']} unidades")
+        cantidad = int(item["cantidad"])
+        color = "🟢" if cantidad > 3 else "🟡" if cantidad > 0 else "🔴"
+        cols[i].metric(f"{color} {item['producto']}", f"{cantidad} unidades")
 
     if ventas:
         st.markdown("---")
@@ -238,30 +267,23 @@ elif menu == "🛒 Registrar Compra":
     with st.form("form_compra"):
         producto = st.selectbox("Producto", PRODUCTOS)
         cantidad = st.number_input("Cantidad comprada", min_value=1, step=1)
-        precio_unitario = st.number_input(
-            "Precio unitario ($)",
-            min_value=0.0,
-            value=config.get(f"costo_{producto.lower().replace(' ', '_')}", 0.0),
-            step=100.0
-        )
+        precio_unitario = st.number_input("Precio unitario ($)", min_value=0.0, step=100.0)
         gasto_envio = st.number_input("Gasto de envío ($)", min_value=0.0, step=1000.0)
-        submitted = st.form_submit_button("Registrar compra")
+        submitted = st.form_submit_button("Registrar compra", use_container_width=True)
 
     if submitted:
         costo_total = (cantidad * precio_unitario) + gasto_envio
         costo_real_unitario = costo_total / cantidad
         fecha = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-        compras_ws = sheet.worksheet("COMPRAS")
-        compras_ws.append_row([fecha, producto, cantidad, precio_unitario, gasto_envio])
-
-        actualizar_inventario(sheet, producto, cantidad, fecha)
+        sheet.worksheet("COMPRAS").append_row([fecha, producto, int(cantidad), precio_unitario, gasto_envio])
+        actualizar_inventario(sheet, producto, int(cantidad), fecha)
 
         st.success("✅ Compra registrada correctamente")
         st.info(f"""
         **Resumen de esta compra:**
         - Producto: {producto}
-        - Cantidad: {cantidad} unidades
+        - Cantidad: {int(cantidad)} unidades
         - Inversión total: ${costo_total:,.0f}
         - Costo real por unidad (con envío): ${costo_real_unitario:,.0f}
         """)
@@ -291,7 +313,7 @@ elif menu == "💰 Registrar Venta":
         producto = st.selectbox("Producto", PRODUCTOS)
         cantidad = st.number_input("Cantidad", min_value=1, step=1)
         estado_pago = st.selectbox("Estado del pago", ["pagado", "pendiente"])
-        submitted = st.form_submit_button("Registrar venta")
+        submitted = st.form_submit_button("Registrar venta", use_container_width=True)
 
     if submitted:
         if not cliente:
@@ -304,9 +326,7 @@ elif menu == "💰 Registrar Venta":
             ganancia = (precio_unit - costo_unit) * cantidad
             fecha = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-            ventas_ws = sheet.worksheet("VENTAS")
-            ventas_ws.append_row([fecha, producto, int(cantidad), cliente, estado_pago, precio_unit])
-
+            sheet.worksheet("VENTAS").append_row([fecha, producto, int(cantidad), cliente, estado_pago, precio_unit])
             actualizar_inventario(sheet, producto, -int(cantidad), fecha)
             registrar_cliente_si_nuevo(sheet, cliente, telefono)
 
@@ -390,7 +410,7 @@ elif menu == "⏳ Pedidos Pendientes":
             cliente_p = st.text_input("Nombre del cliente")
             producto_p = st.selectbox("Producto", PRODUCTOS)
             cantidad_p = st.number_input("Cantidad", min_value=1, step=1)
-            submitted_p = st.form_submit_button("Guardar pedido")
+            submitted_p = st.form_submit_button("Guardar pedido", use_container_width=True)
 
         if submitted_p:
             if not cliente_p:
@@ -409,16 +429,12 @@ elif menu == "⏳ Pedidos Pendientes":
         st.info("No hay pedidos pendientes.")
     else:
         pedidos_ws = sheet.worksheet("PEDIDOS_PENDIENTES")
-
         for i, pedido in enumerate(pedidos):
             col1, col2, col3, col4 = st.columns([3, 2, 2, 1])
             col1.write(f"**{pedido['cliente']}**")
             col2.write(f"{pedido['producto']}")
             col3.write(f"{pedido['cantidad']} unid.")
-
-            if col4.button("✅ Entregar", key=f"entregar_{i}"):
-                fila_real = i + 2
-                pedidos_ws.delete_rows(fila_real)
-                st.success(f"Pedido de {pedido['cliente']} marcado como entregado.")
-                st.info("Recordá registrar la venta en el módulo 💰 Registrar Venta.")
+            if col4.button("✅", key=f"entregar_{i}", help="Marcar como entregado"):
+                pedidos_ws.delete_rows(i + 2)
+                st.success(f"Pedido de {pedido['cliente']} entregado. Registrá la venta en 💰 Registrar Venta.")
                 st.rerun()
