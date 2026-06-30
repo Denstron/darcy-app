@@ -3,7 +3,6 @@ import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime
 import pandas as pd
-import base64
 
 # ── Configuración ──────────────────────────────────────────────────────────────
 SCOPES = [
@@ -17,11 +16,11 @@ st.set_page_config(page_title="Darcy", page_icon="🌿", layout="wide")
 # ── Estilos ────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-    [data-testid="stAppViewContainer"] { background-color: #fff8f9; }
-    [data-testid="stSidebar"] { background-color: #fce4ec; }
+    [data-testid="stAppViewContainer"] { background-color: #fff8f9 !important; }
+    [data-testid="stSidebar"] { background-color: #fce4ec !important; }
     [data-testid="stSidebar"] * { color: #880e4f !important; }
     h1, h2, h3 { color: #c2185b !important; }
-    p, span, div, label { color: #333333 !important; }
+    p, span, div, label, li, td, th { color: #333333 !important; }
     [data-testid="stMetricValue"] { color: #c2185b !important; font-weight: bold !important; }
     [data-testid="stMetricLabel"] { color: #555555 !important; }
     .stButton > button {
@@ -34,7 +33,7 @@ st.markdown("""
     }
     .stButton > button:hover { background-color: #c2185b !important; }
     [data-testid="stForm"] {
-        background: white;
+        background: white !important;
         border-radius: 12px;
         padding: 20px;
         border: 1px solid #f8bbd0;
@@ -44,7 +43,10 @@ st.markdown("""
     [data-testid="stSuccess"] { background-color: #e8f5e9 !important; }
     [data-testid="stInfo"] { background-color: #fce4ec !important; }
     .stRadio label { color: #880e4f !important; font-weight: 500 !important; }
-    .stExpander { border: 1px solid #f8bbd0 !important; border-radius: 8px !important; }
+    [data-testid="stExpander"] { border: 1px solid #f8bbd0 !important; border-radius: 8px !important; background-color: white !important; }
+    [data-testid="stDataFrame"] * { color: #333333 !important; }
+    [data-testid="stMarkdownContainer"] p { color: #333333 !important; }
+    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p { color: #880e4f !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -52,6 +54,7 @@ st.markdown("""
 def check_password():
     if "autenticado" not in st.session_state:
         st.session_state.autenticado = False
+        st.session_state.usuario_actual = ""
 
     if st.session_state.autenticado:
         return True
@@ -67,8 +70,8 @@ def check_password():
         st.markdown("### Acceso privado")
 
         USUARIOS = {
-            "Denstron": "danieL0105",
-            "Darcy": "Darcy0105"
+            "daniel": "daniel2026",
+            "darcy": "natural2026"
         }
 
         usuario = st.text_input("Usuario")
@@ -77,6 +80,7 @@ def check_password():
         if st.button("Entrar", use_container_width=True):
             if usuario in USUARIOS and clave == USUARIOS[usuario]:
                 st.session_state.autenticado = True
+                st.session_state.usuario_actual = usuario
                 st.rerun()
             else:
                 st.error("Usuario o contraseña incorrectos.")
@@ -140,6 +144,8 @@ try:
 except:
     st.sidebar.markdown("## 🌿 Darcy")
 
+nombre_usuario = "Daniel" if st.session_state.usuario_actual == "daniel" else "Darcy"
+st.sidebar.markdown(f"**Hola, {nombre_usuario} 👋**")
 st.sidebar.markdown("---")
 
 menu = st.sidebar.radio("Menú", [
@@ -156,7 +162,13 @@ if st.sidebar.button("🚪 Cerrar sesión"):
     st.session_state.autenticado = False
     st.rerun()
 
-PRODUCTOS = ["Tarro mediano", "Tarrito spray"]
+PRODUCTOS = ["Tarro mediano", "Tarrito spray vacío", "Tarrito spray lleno"]
+
+PRECIOS_KEY = {
+    "Tarro mediano": ("costo_tarro_mediano", "precio_tarro_mediano"),
+    "Tarrito spray vacío": ("costo_tarrito_spray_vacio", "precio_tarrito_spray_vacio"),
+    "Tarrito spray lleno": ("costo_tarrito_spray_lleno", "precio_tarrito_spray_lleno"),
+}
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 📊 DASHBOARD
@@ -169,23 +181,29 @@ if menu == "📊 Dashboard":
     compras = get_compras(sheet)
     inventario = get_inventario(sheet)
 
-    precios_costo = {
-        "Tarro mediano": config["costo_tarro_mediano"],
-        "Tarrito spray": config["costo_tarrito_spray"]
-    }
+    precios_costo = {p: config[k[0]] for p, k in PRECIOS_KEY.items() if k[0] in config}
 
     total_vendido = 0
     total_ganancia = 0
     total_pendiente = 0
+    total_abonado_pendientes = 0
 
     for v in ventas:
         cantidad = int(v["cantidad"])
         precio = float(v["precio_unitario_venta"])
         producto = v["producto"]
         ingreso = cantidad * precio
+        abonado = float(v.get("abonado", 0) or 0)
         total_vendido += ingreso
+
         if v["estado_pago"] == "pendiente":
-            total_pendiente += ingreso
+            saldo = ingreso - abonado
+            total_pendiente += saldo
+            # ganancia ya percibida sobre lo abonado, proporcional
+            costo_total_venta = precios_costo.get(producto, 0) * cantidad
+            if ingreso > 0:
+                proporcion_pagada = abonado / ingreso
+                total_ganancia += (ingreso - costo_total_venta) * proporcion_pagada
         else:
             ganancia = (precio - precios_costo.get(producto, 0)) * cantidad
             total_ganancia += ganancia
@@ -228,10 +246,18 @@ if menu == "📊 Dashboard":
         st.bar_chart(resumen.set_index("Producto"))
 
         st.markdown("---")
-        st.subheader("📋 Últimas ventas")
+        col_h1, col_h2 = st.columns([3, 1])
+        col_h1.subheader("📋 Últimas ventas")
+        ver_todo = col_h2.checkbox("Ver todas")
+
         df_show = df_ventas[["fecha", "producto", "cantidad", "cliente", "estado_pago", "precio_unitario_venta"]].copy()
         df_show.columns = ["Fecha", "Producto", "Cantidad", "Cliente", "Estado", "Precio unit."]
-        st.dataframe(df_show.tail(10).iloc[::-1], use_container_width=True)
+        df_show = df_show.iloc[::-1]
+
+        if not ver_todo:
+            df_show = df_show.head(15)
+
+        st.dataframe(df_show, use_container_width=True)
     else:
         st.info("Aún no hay ventas registradas.")
 
@@ -298,14 +324,8 @@ elif menu == "💰 Registrar Venta":
     inventario = get_inventario(sheet)
     inv_dict = {item["producto"]: int(item["cantidad"]) for item in inventario}
 
-    precios_venta = {
-        "Tarro mediano": config["precio_tarro_mediano"],
-        "Tarrito spray": config["precio_tarrito_spray"]
-    }
-    precios_costo = {
-        "Tarro mediano": config["costo_tarro_mediano"],
-        "Tarrito spray": config["costo_tarrito_spray"]
-    }
+    precios_venta = {p: config[k[1]] for p, k in PRECIOS_KEY.items() if k[1] in config}
+    precios_costo = {p: config[k[0]] for p, k in PRECIOS_KEY.items() if k[0] in config}
 
     with st.form("form_venta"):
         cliente = st.text_input("Nombre del cliente")
@@ -313,6 +333,9 @@ elif menu == "💰 Registrar Venta":
         producto = st.selectbox("Producto", PRODUCTOS)
         cantidad = st.number_input("Cantidad", min_value=1, step=1)
         estado_pago = st.selectbox("Estado del pago", ["pagado", "pendiente"])
+        abono_inicial = 0.0
+        if estado_pago == "pendiente":
+            abono_inicial = st.number_input("Abono inicial ($) — dejar en 0 si no abonó nada", min_value=0.0, step=1000.0)
         submitted = st.form_submit_button("Registrar venta", use_container_width=True)
 
     if submitted:
@@ -325,8 +348,14 @@ elif menu == "💰 Registrar Venta":
             costo_unit = precios_costo[producto]
             ganancia = (precio_unit - costo_unit) * cantidad
             fecha = datetime.now().strftime("%Y-%m-%d %H:%M")
+            total_venta = precio_unit * cantidad
 
-            sheet.worksheet("VENTAS").append_row([fecha, producto, int(cantidad), cliente, estado_pago, precio_unit])
+            if estado_pago == "pagado":
+                abono_inicial = total_venta
+
+            ventas_ws = sheet.worksheet("VENTAS")
+            ventas_ws.append_row([fecha, producto, int(cantidad), cliente, estado_pago, precio_unit, abono_inicial])
+
             actualizar_inventario(sheet, producto, -int(cantidad), fecha)
             registrar_cliente_si_nuevo(sheet, cliente, telefono)
 
@@ -335,9 +364,10 @@ elif menu == "💰 Registrar Venta":
             **Resumen:**
             - Cliente: {cliente}
             - Producto: {producto} × {int(cantidad)}
-            - Total cobrado: ${precio_unit * cantidad:,.0f}
+            - Total cobrado: ${total_venta:,.0f}
+            - Abonado: ${abono_inicial:,.0f}
+            - Saldo pendiente: ${(total_venta - abono_inicial):,.0f}
             - Ganancia de esta venta: ${ganancia:,.0f}
-            - Estado: {estado_pago}
             """)
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -347,54 +377,90 @@ elif menu == "👥 Clientes":
     st.title("👥 Clientes")
 
     clientes = get_clientes(sheet)
-    ventas = get_ventas(sheet)
+    ventas_ws = sheet.worksheet("VENTAS")
+    ventas_raw = ventas_ws.get_all_values()  # incluye encabezado en fila 1
 
     if not clientes:
         st.info("Aún no hay clientes registrados.")
     else:
-        df_ventas = pd.DataFrame(ventas) if ventas else pd.DataFrame(
-            columns=["fecha", "producto", "cantidad", "cliente", "estado_pago", "precio_unitario_venta"]
-        )
+        headers = ventas_raw[0] if ventas_raw else []
+        filas = ventas_raw[1:] if len(ventas_raw) > 1 else []
+
+        # índice de columnas
+        idx_fecha = headers.index("fecha") if "fecha" in headers else 0
+        idx_producto = headers.index("producto") if "producto" in headers else 1
+        idx_cantidad = headers.index("cantidad") if "cantidad" in headers else 2
+        idx_cliente = headers.index("cliente") if "cliente" in headers else 3
+        idx_estado = headers.index("estado_pago") if "estado_pago" in headers else 4
+        idx_precio = headers.index("precio_unitario_venta") if "precio_unitario_venta" in headers else 5
+        idx_abonado = headers.index("abonado") if "abonado" in headers else None
 
         for cliente in clientes:
             nombre = cliente["nombre"]
             tel = cliente.get("telefono", "")
 
-            if not df_ventas.empty:
-                ventas_cliente = df_ventas[df_ventas["cliente"] == nombre].copy()
-                ventas_cliente["cantidad"] = ventas_cliente["cantidad"].astype(int)
-                ventas_cliente["precio_unitario_venta"] = ventas_cliente["precio_unitario_venta"].astype(float)
-                ventas_cliente["total"] = ventas_cliente["cantidad"] * ventas_cliente["precio_unitario_venta"]
-                total_comprado = ventas_cliente["total"].sum()
-                pendiente = ventas_cliente[ventas_cliente["estado_pago"] == "pendiente"]["total"].sum()
-            else:
-                total_comprado = 0
-                pendiente = 0
+            filas_cliente = [(i, f) for i, f in enumerate(filas) if len(f) > idx_cliente and f[idx_cliente] == nombre]
 
-            with st.expander(f"{'🔴' if pendiente > 0 else '🟢'} {nombre} {'— ' + tel if tel else ''}"):
+            total_comprado = 0
+            total_debe = 0
+            for i, f in filas_cliente:
+                cantidad_v = int(f[idx_cantidad]) if f[idx_cantidad] else 0
+                precio_v = float(f[idx_precio]) if f[idx_precio] else 0
+                total_v = cantidad_v * precio_v
+                total_comprado += total_v
+                if f[idx_estado] == "pendiente":
+                    abonado_v = float(f[idx_abonado]) if idx_abonado is not None and len(f) > idx_abonado and f[idx_abonado] else 0
+                    total_debe += (total_v - abonado_v)
+
+            with st.expander(f"{'🔴' if total_debe > 0 else '🟢'} {nombre} {'— ' + tel if tel else ''}"):
                 col1, col2 = st.columns(2)
                 col1.metric("Total comprado", f"${total_comprado:,.0f}")
-                col2.metric("Debe", f"${pendiente:,.0f}")
+                col2.metric("Debe", f"${total_debe:,.0f}")
 
-                if not df_ventas.empty and not ventas_cliente.empty:
-                    st.dataframe(
-                        ventas_cliente[["fecha", "producto", "cantidad", "estado_pago", "total"]].rename(
-                            columns={"fecha": "Fecha", "producto": "Producto", "cantidad": "Cantidad",
-                                     "estado_pago": "Estado", "total": "Total ($)"}
-                        ),
-                        use_container_width=True
-                    )
+                if not filas_cliente:
+                    st.caption("Sin compras registradas todavía.")
+                else:
+                    st.markdown("**Historial de compras:**")
+                    for i, f in filas_cliente:
+                        fila_real = i + 2  # +1 por encabezado, +1 porque sheets es 1-indexed
+                        cantidad_v = int(f[idx_cantidad]) if f[idx_cantidad] else 0
+                        precio_v = float(f[idx_precio]) if f[idx_precio] else 0
+                        total_v = cantidad_v * precio_v
+                        abonado_v = float(f[idx_abonado]) if idx_abonado is not None and len(f) > idx_abonado and f[idx_abonado] else 0
+                        saldo_v = total_v - abonado_v
+                        estado_v = f[idx_estado]
 
-                pendientes_cliente = ventas_cliente[ventas_cliente["estado_pago"] == "pendiente"] if not df_ventas.empty and not ventas_cliente.empty else pd.DataFrame()
-                if not pendientes_cliente.empty:
-                    if st.button(f"✅ Marcar todo como pagado — {nombre}", key=f"pagar_{nombre}"):
-                        ventas_ws = sheet.worksheet("VENTAS")
-                        todas_ventas = ventas_ws.get_all_values()
-                        for idx, fila in enumerate(todas_ventas):
-                            if len(fila) >= 5 and fila[3] == nombre and fila[4] == "pendiente":
-                                ventas_ws.update_cell(idx + 1, 5, "pagado")
-                        st.success(f"✅ Pagos de {nombre} actualizados.")
-                        st.rerun()
+                        c1, c2, c3, c4 = st.columns([3, 2, 2, 2])
+                        c1.write(f"{f[idx_fecha]} — {f[idx_producto]} ×{cantidad_v}")
+                        c2.write(f"${total_v:,.0f}")
+                        if estado_v == "pendiente":
+                            c3.write(f"🔴 Debe ${saldo_v:,.0f}")
+                        else:
+                            c3.write("🟢 Pagado")
+
+                        with c4.popover("⚙️"):
+                            st.write(f"**Editar venta — {f[idx_producto]}**")
+                            nuevo_estado = st.selectbox("Estado", ["pagado", "pendiente"], index=0 if estado_v == "pagado" else 1, key=f"estado_{fila_real}")
+                            nuevo_abonado = abonado_v
+                            if nuevo_estado == "pendiente":
+                                nuevo_abonado = st.number_input("Monto abonado ($)", min_value=0.0, max_value=float(total_v), value=float(abonado_v), step=1000.0, key=f"abono_{fila_real}")
+                            else:
+                                nuevo_abonado = total_v
+
+                            col_g, col_b = st.columns(2)
+                            if col_g.button("💾 Guardar", key=f"guardar_{fila_real}", use_container_width=True):
+                                ventas_ws.update_cell(fila_real, idx_estado + 1, nuevo_estado)
+                                if idx_abonado is not None:
+                                    ventas_ws.update_cell(fila_real, idx_abonado + 1, nuevo_abonado)
+                                st.success("Actualizado.")
+                                st.rerun()
+
+                            if col_b.button("🗑️ Borrar venta", key=f"borrar_{fila_real}", use_container_width=True):
+                                # devolver inventario
+                                actualizar_inventario(sheet, f[idx_producto], cantidad_v, datetime.now().strftime("%Y-%m-%d %H:%M"))
+                                ventas_ws.delete_rows(fila_real)
+                                st.success("Venta borrada y unidades devueltas al inventario.")
+                                st.rerun()
 
 # ══════════════════════════════════════════════════════════════════════════════
 # ⏳ PEDIDOS PENDIENTES
