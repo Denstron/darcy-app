@@ -18,7 +18,7 @@ st.markdown("""
 <style>
     [data-testid="stAppViewContainer"] { background-color: #fff8f9; }
     [data-testid="stSidebar"] { background-color: #fce4ec; }
-    h1 { color: #c2185b; font-family: Georgia, serif; }
+    h1 { color: #c2185b; }
     h2, h3 { color: #ad1457; }
     .metric-card {
         background: white;
