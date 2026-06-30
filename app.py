@@ -327,9 +327,22 @@ elif menu == "💰 Registrar Venta":
     precios_venta = {p: config[k[1]] for p, k in PRECIOS_KEY.items() if k[1] in config}
     precios_costo = {p: config[k[0]] for p, k in PRECIOS_KEY.items() if k[0] in config}
 
+    clientes_existentes = get_clientes(sheet)
+    nombres_existentes = sorted([c["nombre"] for c in clientes_existentes])
+    opciones_cliente = ["➕ Cliente nuevo"] + nombres_existentes
+
+    seleccion = st.selectbox("Cliente", opciones_cliente)
+
     with st.form("form_venta"):
-        cliente = st.text_input("Nombre del cliente")
-        telefono = st.text_input("Teléfono (opcional)")
+        if seleccion == "➕ Cliente nuevo":
+            cliente = st.text_input("Nombre del cliente nuevo")
+            telefono = st.text_input("Teléfono (opcional)")
+        else:
+            cliente = seleccion
+            tel_actual = next((c.get("telefono", "") for c in clientes_existentes if c["nombre"] == seleccion), "")
+            st.caption(f"Cliente seleccionado: **{cliente}** {'— ' + tel_actual if tel_actual else ''}")
+            telefono = tel_actual
+
         producto = st.selectbox("Producto", PRODUCTOS)
         cantidad = st.number_input("Cantidad", min_value=1, step=1)
         estado_pago = st.selectbox("Estado del pago", ["pagado", "pendiente"])
