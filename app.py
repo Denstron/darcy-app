@@ -18,16 +18,10 @@ st.markdown("""
 <style>
     [data-testid="stAppViewContainer"] { background-color: #fff8f9; }
     [data-testid="stSidebar"] { background-color: #fce4ec; }
-    h1 { color: #c2185b; }
-    h2, h3 { color: #ad1457; }
-    .metric-card {
-        background: white;
-        border-left: 4px solid #e91e8c;
-        border-radius: 8px;
-        padding: 16px;
-        margin: 8px 0;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.07);
-    }
+    [data-testid="stSidebar"] * { color: #880e4f; }
+    h1 { color: #c2185b !important; }
+    h2, h3 { color: #ad1457 !important; }
+    p, span, div, label { color: #333333 !important; }
     .stButton > button {
         background-color: #e91e8c;
         color: white;
@@ -50,6 +44,7 @@ def conectar_sheets():
         creds = Credentials.from_service_account_file("credenciales.json", scopes=SCOPES)
     cliente = gspread.authorize(creds)
     return cliente.open_by_url(SHEET_URL)
+
 def get_config(sheet):
     cfg = sheet.worksheet("CONFIG").get_all_records()
     return {row["clave"]: float(row["valor"]) for row in cfg}
@@ -114,11 +109,6 @@ if menu == "📊 Dashboard":
     compras = get_compras(sheet)
     inventario = get_inventario(sheet)
 
-    # ── Calcular métricas ──
-    total_vendido = 0
-    total_ganancia = 0
-    total_pendiente = 0
-
     precios_venta = {
         "Tarro mediano": config["precio_tarro_mediano"],
         "Tarrito spray": config["precio_tarrito_spray"]
@@ -127,6 +117,10 @@ if menu == "📊 Dashboard":
         "Tarro mediano": config["costo_tarro_mediano"],
         "Tarrito spray": config["costo_tarrito_spray"]
     }
+
+    total_vendido = 0
+    total_ganancia = 0
+    total_pendiente = 0
 
     for v in ventas:
         cantidad = int(v["cantidad"])
@@ -148,7 +142,6 @@ if menu == "📊 Dashboard":
     reinvertir = total_ganancia * (config["porcentaje_reinversion"] / 100)
     libre = total_ganancia - reinvertir
 
-    # ── Métricas principales ──
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("💵 Total vendido", f"${total_vendido:,.0f}")
     col2.metric("📈 Ganancia neta", f"${total_ganancia:,.0f}")
@@ -163,13 +156,11 @@ if menu == "📊 Dashboard":
 
     st.markdown("---")
 
-    # ── Inventario actual ──
     st.subheader("📦 Inventario actual")
     cols = st.columns(len(inventario))
     for i, item in enumerate(inventario):
         cols[i].metric(item["producto"], f"{item['cantidad']} unidades")
 
-    # ── Gráfica de ventas ──
     if ventas:
         st.markdown("---")
         st.subheader("📊 Ventas por producto")
@@ -239,7 +230,7 @@ elif menu == "🛒 Registrar Compra":
 
         actualizar_inventario(sheet, producto, cantidad, fecha)
 
-        st.success(f"✅ Compra registrada correctamente")
+        st.success("✅ Compra registrada correctamente")
         st.info(f"""
         **Resumen de esta compra:**
         - Producto: {producto}
@@ -292,7 +283,7 @@ elif menu == "💰 Registrar Venta":
             actualizar_inventario(sheet, producto, -int(cantidad), fecha)
             registrar_cliente_si_nuevo(sheet, cliente, telefono)
 
-            st.success(f"✅ Venta registrada")
+            st.success("✅ Venta registrada")
             st.info(f"""
             **Resumen:**
             - Cliente: {cliente}
@@ -327,7 +318,6 @@ elif menu == "👥 Clientes":
                 ventas_cliente["cantidad"] = ventas_cliente["cantidad"].astype(int)
                 ventas_cliente["precio_unitario_venta"] = ventas_cliente["precio_unitario_venta"].astype(float)
                 ventas_cliente["total"] = ventas_cliente["cantidad"] * ventas_cliente["precio_unitario_venta"]
-
                 total_comprado = ventas_cliente["total"].sum()
                 pendiente = ventas_cliente[ventas_cliente["estado_pago"] == "pendiente"]["total"].sum()
             else:
@@ -348,7 +338,6 @@ elif menu == "👥 Clientes":
                         use_container_width=True
                     )
 
-                # Marcar como pagado
                 pendientes_cliente = ventas_cliente[ventas_cliente["estado_pago"] == "pendiente"] if not df_ventas.empty and not ventas_cliente.empty else pd.DataFrame()
                 if not pendientes_cliente.empty:
                     if st.button(f"✅ Marcar todo como pagado — {nombre}", key=f"pagar_{nombre}"):
@@ -369,7 +358,6 @@ elif menu == "⏳ Pedidos Pendientes":
 
     pedidos = get_pedidos(sheet)
 
-    # Formulario nuevo pedido
     with st.expander("➕ Agregar pedido nuevo"):
         with st.form("form_pedido"):
             cliente_p = st.text_input("Nombre del cliente")
@@ -394,7 +382,6 @@ elif menu == "⏳ Pedidos Pendientes":
         st.info("No hay pedidos pendientes.")
     else:
         pedidos_ws = sheet.worksheet("PEDIDOS_PENDIENTES")
-        todas = pedidos_ws.get_all_values()
 
         for i, pedido in enumerate(pedidos):
             col1, col2, col3, col4 = st.columns([3, 2, 2, 1])
@@ -403,7 +390,6 @@ elif menu == "⏳ Pedidos Pendientes":
             col3.write(f"{pedido['cantidad']} unid.")
 
             if col4.button("✅ Entregar", key=f"entregar_{i}"):
-                # Buscar la fila real en el sheet (fila 1 = encabezado)
                 fila_real = i + 2
                 pedidos_ws.delete_rows(fila_real)
                 st.success(f"Pedido de {pedido['cliente']} marcado como entregado.")
