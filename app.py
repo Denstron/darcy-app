@@ -42,10 +42,14 @@ st.markdown("""
 # ── Conexión Google Sheets ─────────────────────────────────────────────────────
 @st.cache_resource
 def conectar_sheets():
-    creds = Credentials.from_service_account_file("credenciales.json", scopes=SCOPES)
+    if "gcp_service_account" in st.secrets:
+        creds = Credentials.from_service_account_info(
+            st.secrets["gcp_service_account"], scopes=SCOPES
+        )
+    else:
+        creds = Credentials.from_service_account_file("credenciales.json", scopes=SCOPES)
     cliente = gspread.authorize(creds)
     return cliente.open_by_url(SHEET_URL)
-
 def get_config(sheet):
     cfg = sheet.worksheet("CONFIG").get_all_records()
     return {row["clave"]: float(row["valor"]) for row in cfg}
