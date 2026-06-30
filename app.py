@@ -47,6 +47,17 @@ st.markdown("""
     [data-testid="stDataFrame"] * { color: #333333 !important; }
     [data-testid="stMarkdownContainer"] p { color: #333333 !important; }
     [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p { color: #880e4f !important; }
+
+    /* Inputs, selects y number inputs: fondo blanco y letra oscura siempre */
+    input, textarea, select { background-color: #ffffff !important; color: #333333 !important; }
+    [data-baseweb="input"] input { background-color: #ffffff !important; color: #333333 !important; }
+    [data-baseweb="select"] { background-color: #ffffff !important; }
+    [data-baseweb="select"] * { color: #333333 !important; }
+    [data-testid="stNumberInput"] input { background-color: #ffffff !important; color: #333333 !important; }
+    [data-testid="stTextInput"] input { background-color: #ffffff !important; color: #333333 !important; }
+    [data-testid="stSelectbox"] div[data-baseweb="select"] > div { background-color: #ffffff !important; color: #333333 !important; }
+    ul[role="listbox"] { background-color: #ffffff !important; }
+    ul[role="listbox"] li { color: #333333 !important; }
 </style>
 """, unsafe_allow_html=True)
 
