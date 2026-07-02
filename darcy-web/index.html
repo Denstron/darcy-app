@@ -3,867 +3,728 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Darcy — Flores Artesanales & Desodorante Natural</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Darcy Flores — Flores Artesanales Únicas</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --rosa: #e91e8c;
-    --rosa-oscuro: #c2185b;
-    --rosa-suave: #fce4ec;
-    --rosa-medio: #f8bbd0;
-    --verde: #2d6a4f;
-    --verde-suave: #d8f3dc;
-    --dorado: #c9a84c;
-    --crema: #fffaf5;
-    --gris: #555;
-    --blanco: #fff;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--crema);
-    color: #333;
-    overflow-x: hidden;
-  }
-
-  /* ── NAV ── */
-  nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--rosa-medio);
-    padding: 14px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .nav-logo {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 1.6rem;
-    color: var(--rosa);
-    letter-spacing: -0.5px;
-  }
-
-  .nav-links {
-    display: flex;
-    gap: 32px;
-    list-style: none;
-  }
-
-  .nav-links a {
-    text-decoration: none;
-    color: #444;
-    font-size: 0.88rem;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    transition: color 0.2s;
-  }
-
-  .nav-links a:hover { color: var(--rosa); }
-
-  .nav-wa {
-    background: #25D366;
-    color: white !important;
-    padding: 8px 18px;
-    border-radius: 20px;
-    font-size: 0.82rem !important;
-  }
-
-  /* ── HERO ── */
-  .hero {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #fff0f7 0%, #fce4ec 40%, #e8f5e9 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 100px 24px 60px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: -50px; right: -50px;
-    width: 400px; height: 400px;
-    background: radial-gradient(circle, rgba(233,30,140,0.08) 0%, transparent 70%);
-    border-radius: 50%;
-  }
-
-  .hero::after {
-    content: '';
-    position: absolute;
-    bottom: -80px; left: -80px;
-    width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(45,106,79,0.06) 0%, transparent 70%);
-    border-radius: 50%;
-  }
-
-  .hero-content { position: relative; z-index: 1; max-width: 700px; }
-
-  .hero-badge {
-    display: inline-block;
-    background: var(--rosa-suave);
-    color: var(--rosa-oscuro);
-    font-size: 0.78rem;
-    font-weight: 500;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 6px 16px;
-    border-radius: 20px;
-    margin-bottom: 24px;
-  }
-
-  .hero h1 {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: clamp(3.5rem, 10vw, 7rem);
-    color: var(--rosa);
-    line-height: 0.9;
-    margin-bottom: 8px;
-    text-shadow: 0 2px 20px rgba(233,30,140,0.15);
-  }
-
-  .hero-sub {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(1rem, 3vw, 1.4rem);
-    color: var(--verde);
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-  }
-
-  .hero-desc {
-    font-size: 1rem;
-    color: var(--gris);
-    line-height: 1.7;
-    margin-bottom: 40px;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .hero-btns {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .btn-primary {
-    background: var(--rosa);
-    color: white;
-    padding: 14px 32px;
-    border-radius: 30px;
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    transition: all 0.3s;
-    box-shadow: 0 4px 20px rgba(233,30,140,0.3);
-  }
-
-  .btn-primary:hover {
-    background: var(--rosa-oscuro);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(233,30,140,0.4);
-  }
-
-  .btn-secondary {
-    background: transparent;
-    color: var(--verde);
-    padding: 14px 32px;
-    border-radius: 30px;
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 500;
-    border: 2px solid var(--verde);
-    transition: all 0.3s;
-  }
-
-  .btn-secondary:hover {
-    background: var(--verde);
-    color: white;
-    transform: translateY(-2px);
-  }
-
-  .hero-petals {
-    position: absolute;
-    font-size: 2rem;
-    opacity: 0.15;
-    animation: float 6s ease-in-out infinite;
-  }
-  .petal-1 { top: 15%; left: 8%; animation-delay: 0s; }
-  .petal-2 { top: 30%; right: 10%; animation-delay: 2s; }
-  .petal-3 { bottom: 25%; left: 5%; animation-delay: 4s; }
-  .petal-4 { top: 60%; right: 5%; animation-delay: 1s; }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(10deg); }
-  }
-
-  /* ── SECTIONS ── */
-  section { padding: 80px 24px; }
-
-  .section-label {
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--rosa);
-    margin-bottom: 12px;
-  }
-
-  .section-title {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(1.8rem, 4vw, 2.8rem);
-    color: #222;
-    margin-bottom: 16px;
-    line-height: 1.2;
-  }
-
-  .section-desc {
-    color: var(--gris);
-    font-size: 1rem;
-    line-height: 1.7;
-    max-width: 560px;
-  }
-
-  .section-header {
-    text-align: center;
-    margin-bottom: 56px;
-  }
-
-  .section-header .section-desc {
-    margin: 0 auto;
-  }
-
-  /* ── FLORES SECTION ── */
-  #flores { background: white; }
-
-  /* Selector de tamaño */
-  .size-tabs {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 48px;
-    flex-wrap: wrap;
-  }
-
-  .size-tab {
-    padding: 10px 24px;
-    border-radius: 25px;
-    border: 2px solid var(--rosa-medio);
-    background: white;
-    color: #666;
-    font-size: 0.88rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-
-  .size-tab:hover, .size-tab.active {
-    background: var(--rosa);
-    border-color: var(--rosa);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(233,30,140,0.25);
-  }
-
-  /* Grid de productos */
-  .flores-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 28px;
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-
-  .flor-card {
-    background: var(--crema);
-    border-radius: 20px;
-    overflow: hidden;
-    transition: all 0.3s;
-    border: 1px solid var(--rosa-medio);
-    display: none;
-  }
-
-  .flor-card.visible {
-    display: block;
-    animation: fadeIn 0.4s ease;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .flor-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 40px rgba(233,30,140,0.15);
-  }
-
-  .flor-img {
-    width: 100%;
-    height: 260px;
-    object-fit: cover;
-    display: block;
-  }
-
-  .flor-info {
-    padding: 20px;
-  }
-
-  .flor-tag {
-    display: inline-block;
-    background: var(--rosa-suave);
-    color: var(--rosa-oscuro);
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 3px 10px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-  }
-
-  .flor-nombre {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.15rem;
-    color: #222;
-    margin-bottom: 6px;
-  }
-
-  .flor-desc {
-    font-size: 0.85rem;
-    color: var(--gris);
-    line-height: 1.5;
-    margin-bottom: 14px;
-  }
-
-  .flor-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .flor-precio {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.4rem;
-    color: var(--rosa);
-    font-weight: 700;
-  }
-
-  .btn-pedir {
-    background: var(--verde);
-    color: white;
-    padding: 8px 18px;
-    border-radius: 20px;
-    text-decoration: none;
-    font-size: 0.82rem;
-    font-weight: 500;
-    transition: all 0.2s;
-  }
-
-  .btn-pedir:hover {
-    background: #1b4332;
-    transform: scale(1.05);
-  }
-
-  /* Pedido personalizado */
-  .pedido-banner {
-    background: linear-gradient(135deg, var(--rosa-suave), #fff0f7);
-    border: 2px solid var(--rosa-medio);
-    border-radius: 20px;
-    padding: 40px;
-    text-align: center;
-    max-width: 700px;
-    margin: 48px auto 0;
-  }
-
-  .pedido-banner h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.6rem;
-    color: var(--rosa-oscuro);
-    margin-bottom: 12px;
-  }
-
-  .pedido-banner p {
-    color: var(--gris);
-    margin-bottom: 24px;
-    line-height: 1.6;
-  }
-
-  /* ── DESODORANTE SECTION ── */
-  #desodorante {
-    background: linear-gradient(135deg, #f0fdf4 0%, #fce4ec 100%);
-  }
-
-  .deso-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    align-items: center;
-  }
-
-  .deso-img-wrap {
-    position: relative;
-  }
-
-  .deso-img {
-    width: 100%;
-    border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.12);
-  }
-
-  .deso-badge-float {
-    position: absolute;
-    top: -16px; right: -16px;
-    background: var(--verde);
-    color: white;
-    padding: 12px 20px;
-    border-radius: 16px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    text-align: center;
-    line-height: 1.3;
-    box-shadow: 0 4px 16px rgba(45,106,79,0.3);
-  }
-
-  .deso-content h2 {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 2.4rem;
-    color: var(--rosa);
-    margin-bottom: 8px;
-  }
-
-  .deso-content .deso-tagline {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1rem;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--verde);
-    margin-bottom: 20px;
-  }
-
-  .deso-content p {
-    color: var(--gris);
-    line-height: 1.7;
-    margin-bottom: 28px;
-    font-size: 0.95rem;
-  }
-
-  .beneficios {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 32px;
-  }
-
-  .beneficio {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.88rem;
-    color: #444;
-  }
-
-  .beneficio-icon {
-    width: 28px; height: 28px;
-    background: var(--verde-suave);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.85rem;
-    flex-shrink: 0;
-  }
-
-  .deso-precios {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    margin-bottom: 28px;
-  }
-
-  .deso-precio-card {
-    background: white;
-    border: 1px solid var(--rosa-medio);
-    border-radius: 14px;
-    padding: 14px 20px;
-    text-align: center;
-    min-width: 130px;
-  }
-
-  .deso-precio-nombre {
-    font-size: 0.78rem;
-    color: var(--gris);
-    margin-bottom: 4px;
-  }
-
-  .deso-precio-valor {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.4rem;
-    color: var(--rosa);
-    font-weight: 700;
-  }
-
-  /* ── COMO PEDIR ── */
-  #como-pedir { background: white; }
-
-  .pasos {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 32px;
-    max-width: 900px;
-    margin: 0 auto;
-  }
-
-  .paso {
-    text-align: center;
-    padding: 32px 20px;
-    border-radius: 20px;
-    background: var(--crema);
-    border: 1px solid var(--rosa-medio);
-    transition: all 0.3s;
-  }
-
-  .paso:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(233,30,140,0.1);
-  }
-
-  .paso-num {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.5rem;
-    color: var(--rosa-medio);
-    font-weight: 700;
-    line-height: 1;
-    margin-bottom: 8px;
-  }
-
-  .paso-icon { font-size: 2rem; margin-bottom: 12px; }
-
-  .paso h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    color: #222;
-    margin-bottom: 8px;
-  }
-
-  .paso p {
-    font-size: 0.85rem;
-    color: var(--gris);
-    line-height: 1.5;
-  }
-
-  /* ── CTA FINAL ── */
-  .cta-final {
-    background: linear-gradient(135deg, var(--rosa) 0%, var(--rosa-oscuro) 100%);
-    padding: 80px 24px;
-    text-align: center;
-    color: white;
-  }
-
-  .cta-final h2 {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    margin-bottom: 16px;
-  }
-
-  .cta-final p {
-    font-size: 1rem;
-    opacity: 0.9;
-    margin-bottom: 36px;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .btn-wa {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: white;
-    color: var(--rosa-oscuro);
-    padding: 16px 36px;
-    border-radius: 30px;
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: all 0.3s;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  }
-
-  .btn-wa:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-  }
-
-  .wa-icon { font-size: 1.3rem; }
-
-  /* ── FOOTER ── */
-  footer {
-    background: #1a1a1a;
-    color: #aaa;
-    text-align: center;
-    padding: 32px 24px;
-    font-size: 0.85rem;
-  }
-
-  footer span {
-    color: var(--rosa);
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 1rem;
-  }
-
-  /* ── MOBILE ── */
-  @media (max-width: 768px) {
-    nav { padding: 12px 20px; }
-    .nav-links { display: none; }
-
-    .deso-container {
-      grid-template-columns: 1fr;
-      gap: 32px;
-    }
-
-    .deso-badge-float {
-      position: static;
-      display: inline-block;
-      margin-bottom: 16px;
-    }
-
-    .beneficios { grid-template-columns: 1fr; }
-
-    section { padding: 60px 20px; }
-
-    .flores-grid { grid-template-columns: 1fr; }
-
-    .pedido-banner { padding: 28px 20px; }
-  }
-
-  /* ── WHATSAPP FLOAT ── */
-  .wa-float {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    z-index: 99;
-    background: #25D366;
-    color: white;
-    width: 58px; height: 58px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.6rem;
-    text-decoration: none;
-    box-shadow: 0 4px 20px rgba(37,211,102,0.4);
-    transition: all 0.3s;
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  .wa-float:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 28px rgba(37,211,102,0.5);
-  }
-
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 4px 20px rgba(37,211,102,0.4); }
-    50% { box-shadow: 0 4px 30px rgba(37,211,102,0.7); }
-  }
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --rosa:#FF006E;
+  --rosa2:#FF4D94;
+  --fucsia:#E91E8C;
+  --morado:#7B2FBE;
+  --dorado:#FFD700;
+  --verde:#00C853;
+  --oscuro:#1A0A2E;
+  --crema:#FFF8F5;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Poppins',sans-serif;background:var(--oscuro);color:#fff;overflow-x:hidden;}
+
+/* ── CANVAS PÉTALOS ── */
+#canvas-petals{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  padding:16px 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(26,10,46,0.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,0,110,0.2);
+}
+.nav-logo{
+  font-family:'Playfair Display',serif;
+  font-style:italic;font-size:1.8rem;
+  background:linear-gradient(135deg,var(--rosa),var(--dorado));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.nav-links{display:flex;gap:28px;list-style:none;}
+.nav-links a{color:rgba(255,255,255,0.8);text-decoration:none;font-size:0.88rem;font-weight:500;transition:color 0.2s;}
+.nav-links a:hover{color:var(--rosa2);}
+.nav-wa{
+  background:linear-gradient(135deg,#25D366,#128C7E);
+  color:white!important;padding:10px 22px;border-radius:25px;font-weight:600!important;
+  box-shadow:0 4px 15px rgba(37,211,102,0.4);transition:all 0.3s!important;
+}
+.nav-wa:hover{transform:scale(1.05)!important;box-shadow:0 6px 20px rgba(37,211,102,0.6)!important;}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:120px 24px 80px;
+  position:relative;overflow:hidden;
+  background:radial-gradient(ellipse at 20% 50%,rgba(123,47,190,0.3) 0%,transparent 60%),
+             radial-gradient(ellipse at 80% 20%,rgba(255,0,110,0.25) 0%,transparent 50%),
+             radial-gradient(ellipse at 60% 80%,rgba(255,77,148,0.2) 0%,transparent 50%),
+             var(--oscuro);
+}
+.hero-glow{
+  position:absolute;width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,0,110,0.15) 0%,transparent 70%);
+  animation:glowPulse 4s ease-in-out infinite;
+}
+@keyframes glowPulse{0%,100%{transform:scale(1);opacity:0.5;}50%{transform:scale(1.2);opacity:1;}}
+
+.hero-content{position:relative;z-index:2;max-width:800px;}
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,0,110,0.15);
+  border:1px solid rgba(255,0,110,0.4);
+  color:var(--rosa2);
+  font-size:0.78rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;
+  padding:8px 20px;border-radius:25px;margin-bottom:28px;
+  animation:fadeDown 0.8s ease both;
+}
+.badge-dot{width:6px;height:6px;background:var(--rosa);border-radius:50%;animation:blink 1.5s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+.hero h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(4rem,12vw,9rem);
+  font-style:italic;
+  line-height:0.85;
+  margin-bottom:12px;
+  animation:fadeUp 0.9s ease 0.2s both;
+}
+.hero h1 span{
+  background:linear-gradient(135deg,#FF006E,#FF4D94,#FFD700,#FF006E);
+  background-size:300% 300%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:gradientShift 4s ease infinite;
+}
+@keyframes gradientShift{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+
+.hero-sub{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1rem,2.5vw,1.5rem);
+  color:rgba(255,255,255,0.6);
+  letter-spacing:4px;text-transform:uppercase;
+  margin-bottom:24px;
+  animation:fadeUp 0.9s ease 0.3s both;
+}
+.hero-desc{
+  font-size:1.05rem;color:rgba(255,255,255,0.7);
+  line-height:1.8;margin-bottom:44px;max-width:550px;margin-left:auto;margin-right:auto;
+  animation:fadeUp 0.9s ease 0.4s both;
+}
+.hero-btns{
+  display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+  animation:fadeUp 0.9s ease 0.5s both;
+}
+.btn-hero{
+  padding:16px 36px;border-radius:50px;text-decoration:none;
+  font-size:0.95rem;font-weight:600;letter-spacing:0.5px;
+  transition:all 0.3s;display:inline-flex;align-items:center;gap:8px;
+}
+.btn-hero-primary{
+  background:linear-gradient(135deg,var(--rosa),var(--fucsia));
+  color:white;box-shadow:0 8px 30px rgba(255,0,110,0.4);
+}
+.btn-hero-primary:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 14px 40px rgba(255,0,110,0.6);}
+.btn-hero-secondary{
+  background:transparent;color:white;
+  border:2px solid rgba(255,255,255,0.3);
+  backdrop-filter:blur(10px);
+}
+.btn-hero-secondary:hover{border-color:var(--rosa2);color:var(--rosa2);transform:translateY(-3px);}
+
+/* Stats */
+.hero-stats{
+  display:flex;justify-content:center;gap:48px;margin-top:64px;
+  animation:fadeUp 0.9s ease 0.6s both;
+  flex-wrap:wrap;
+}
+.stat{text-align:center;}
+.stat-num{
+  font-family:'Playfair Display',serif;
+  font-size:2.2rem;font-weight:700;
+  background:linear-gradient(135deg,var(--rosa2),var(--dorado));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.stat-label{font-size:0.75rem;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;}
+
+/* Scroll indicator */
+.scroll-indicator{
+  position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  color:rgba(255,255,255,0.4);font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;
+  animation:bounce 2s ease-in-out infinite;
+}
+.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,transparent,var(--rosa));}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(8px);}}
+
+/* ── ANIMACIONES GENERALES ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
+
+.reveal{opacity:0;transform:translateY(40px);transition:all 0.7s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-left{opacity:0;transform:translateX(-40px);transition:all 0.7s ease;}
+.reveal-left.visible{opacity:1;transform:translateX(0);}
+.reveal-right{opacity:0;transform:translateX(40px);transition:all 0.7s ease;}
+.reveal-right.visible{opacity:1;transform:translateX(0);}
+
+/* ── SECCIÓN POR QUÉ DARCY ── */
+.why-section{
+  padding:100px 24px;
+  background:linear-gradient(180deg,var(--oscuro) 0%,#2D1B4E 50%,var(--oscuro) 100%);
+  position:relative;z-index:1;
+}
+.section-label{
+  font-size:0.72rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;
+  background:linear-gradient(135deg,var(--rosa),var(--rosa2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:12px;display:block;
+}
+.section-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2rem,5vw,3.5rem);
+  line-height:1.1;margin-bottom:16px;
+}
+.section-title span{
+  background:linear-gradient(135deg,var(--rosa2),var(--dorado));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.section-header{text-align:center;margin-bottom:64px;}
+.section-desc{color:rgba(255,255,255,0.6);font-size:1rem;line-height:1.7;max-width:560px;margin:0 auto;}
+
+.why-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:24px;max-width:1000px;margin:0 auto;
+}
+.why-card{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,0,110,0.15);
+  border-radius:20px;padding:36px 28px;text-align:center;
+  transition:all 0.4s;cursor:default;
+  position:relative;overflow:hidden;
+}
+.why-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(135deg,rgba(255,0,110,0.08),rgba(123,47,190,0.08));
+  opacity:0;transition:opacity 0.4s;
+}
+.why-card:hover{transform:translateY(-8px);border-color:rgba(255,0,110,0.4);box-shadow:0 20px 40px rgba(255,0,110,0.15);}
+.why-card:hover::before{opacity:1;}
+.why-icon{font-size:3rem;margin-bottom:16px;display:block;filter:drop-shadow(0 4px 8px rgba(255,0,110,0.3));}
+.why-card h3{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:10px;color:white;}
+.why-card p{font-size:0.85rem;color:rgba(255,255,255,0.6);line-height:1.6;}
+
+/* ── FLORES SECTION ── */
+.flores-section{
+  padding:100px 24px;
+  background:var(--oscuro);
+  position:relative;z-index:1;
+}
+.flores-section::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--rosa),transparent);
+}
+
+/* Tabs */
+.size-tabs{
+  display:flex;justify-content:center;gap:12px;margin-bottom:56px;flex-wrap:wrap;
+}
+.size-tab{
+  padding:12px 28px;border-radius:30px;
+  border:1px solid rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.04);
+  color:rgba(255,255,255,0.6);
+  font-size:0.88rem;font-weight:500;cursor:pointer;
+  transition:all 0.3s;font-family:'Poppins',sans-serif;
+}
+.size-tab:hover,.size-tab.active{
+  background:linear-gradient(135deg,var(--rosa),var(--fucsia));
+  border-color:transparent;color:white;
+  box-shadow:0 8px 25px rgba(255,0,110,0.4);
+  transform:translateY(-2px);
+}
+
+/* Grid */
+.flores-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:28px;max-width:1200px;margin:0 auto;
+}
+.flor-card{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:24px;overflow:hidden;
+  transition:all 0.4s;display:none;
+  position:relative;
+}
+.flor-card.visible{display:block;animation:cardIn 0.5s ease both;}
+@keyframes cardIn{from{opacity:0;transform:scale(0.95) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.flor-card:hover{
+  transform:translateY(-10px);
+  border-color:rgba(255,0,110,0.4);
+  box-shadow:0 20px 50px rgba(255,0,110,0.2);
+}
+
+.flor-img-wrap{position:relative;overflow:hidden;height:280px;}
+.flor-img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s ease;}
+.flor-card:hover .flor-img{transform:scale(1.08);}
+
+.flor-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(26,10,46,0.9) 0%,transparent 50%);
+  opacity:0;transition:opacity 0.4s;
+  display:flex;align-items:flex-end;justify-content:center;padding-bottom:20px;
+}
+.flor-card:hover .flor-overlay{opacity:1;}
+.btn-overlay{
+  background:linear-gradient(135deg,var(--rosa),var(--fucsia));
+  color:white;padding:10px 24px;border-radius:25px;
+  text-decoration:none;font-size:0.85rem;font-weight:600;
+  transform:translateY(10px);transition:transform 0.3s;
+  box-shadow:0 4px 15px rgba(255,0,110,0.5);
+}
+.flor-card:hover .btn-overlay{transform:translateY(0);}
+
+.flor-tag{
+  position:absolute;top:16px;left:16px;
+  background:rgba(26,10,46,0.8);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,0,110,0.4);
+  color:var(--rosa2);font-size:0.7rem;font-weight:600;
+  letter-spacing:1.5px;text-transform:uppercase;
+  padding:4px 12px;border-radius:20px;
+}
+
+.flor-info{padding:22px;}
+.flor-nombre{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:6px;color:white;}
+.flor-desc{font-size:0.82rem;color:rgba(255,255,255,0.5);line-height:1.5;margin-bottom:16px;}
+.flor-footer{display:flex;align-items:center;justify-content:space-between;}
+.flor-precio{
+  font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;
+  background:linear-gradient(135deg,var(--rosa2),var(--dorado));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.btn-pedir{
+  background:rgba(255,0,110,0.15);border:1px solid rgba(255,0,110,0.4);
+  color:var(--rosa2);padding:8px 20px;border-radius:20px;
+  text-decoration:none;font-size:0.82rem;font-weight:500;
+  transition:all 0.3s;
+}
+.btn-pedir:hover{background:var(--rosa);color:white;border-color:var(--rosa);box-shadow:0 4px 15px rgba(255,0,110,0.4);}
+
+/* Pedido personalizado */
+.pedido-banner{
+  background:linear-gradient(135deg,rgba(255,0,110,0.1),rgba(123,47,190,0.1));
+  border:1px solid rgba(255,0,110,0.25);
+  border-radius:24px;padding:48px 40px;text-align:center;
+  max-width:700px;margin:64px auto 0;
+  position:relative;overflow:hidden;
+}
+.pedido-banner::before{
+  content:'✨';position:absolute;font-size:8rem;opacity:0.05;
+  top:-20px;right:-20px;
+}
+.pedido-banner h3{
+  font-family:'Playfair Display',serif;font-size:1.8rem;
+  margin-bottom:12px;
+  background:linear-gradient(135deg,var(--rosa2),var(--dorado));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.pedido-banner p{color:rgba(255,255,255,0.6);margin-bottom:28px;line-height:1.7;}
+
+/* ── PROCESO ── */
+.proceso-section{
+  padding:100px 24px;
+  background:linear-gradient(135deg,#2D1B4E 0%,#1A0A2E 100%);
+  position:relative;z-index:1;
+}
+.pasos{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:0;max-width:900px;margin:0 auto;
+  position:relative;
+}
+.pasos::before{
+  content:'';position:absolute;top:40px;left:10%;right:10%;height:2px;
+  background:linear-gradient(90deg,var(--rosa),var(--morado),var(--rosa));
+  z-index:0;
+}
+.paso{
+  text-align:center;padding:0 20px;position:relative;z-index:1;
+}
+.paso-num-wrap{
+  width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(135deg,var(--rosa),var(--fucsia));
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 20px;
+  box-shadow:0 8px 25px rgba(255,0,110,0.4);
+  font-size:1.8rem;
+}
+.paso h3{font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:8px;}
+.paso p{font-size:0.82rem;color:rgba(255,255,255,0.5);line-height:1.5;}
+
+/* ── CTA FINAL ── */
+.cta-section{
+  padding:120px 24px;text-align:center;
+  background:radial-gradient(ellipse at center,rgba(255,0,110,0.2) 0%,var(--oscuro) 70%);
+  position:relative;z-index:1;
+  overflow:hidden;
+}
+.cta-section::before{
+  content:'';position:absolute;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  width:600px;height:600px;border-radius:50%;
+  border:1px solid rgba(255,0,110,0.1);
+  animation:expandRing 3s ease-in-out infinite;
+}
+.cta-section::after{
+  content:'';position:absolute;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  width:400px;height:400px;border-radius:50%;
+  border:1px solid rgba(255,0,110,0.15);
+  animation:expandRing 3s ease-in-out infinite 0.5s;
+}
+@keyframes expandRing{
+  0%{transform:translate(-50%,-50%) scale(0.8);opacity:1;}
+  100%{transform:translate(-50%,-50%) scale(1.4);opacity:0;}
+}
+.cta-content{position:relative;z-index:2;}
+.cta-section h2{
+  font-family:'Playfair Display',serif;font-style:italic;
+  font-size:clamp(2.5rem,7vw,5rem);margin-bottom:20px;
+  background:linear-gradient(135deg,white,var(--rosa2),var(--dorado));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.cta-section p{
+  color:rgba(255,255,255,0.6);font-size:1.05rem;
+  margin-bottom:40px;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.7;
+}
+.btn-wa-big{
+  display:inline-flex;align-items:center;gap:12px;
+  background:linear-gradient(135deg,#25D366,#128C7E);
+  color:white;padding:18px 44px;border-radius:50px;
+  text-decoration:none;font-size:1.1rem;font-weight:700;
+  box-shadow:0 8px 30px rgba(37,211,102,0.4);
+  transition:all 0.3s;
+  animation:waPulse 2s ease-in-out infinite;
+}
+.btn-wa-big:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 14px 40px rgba(37,211,102,0.6);}
+@keyframes waPulse{0%,100%{box-shadow:0 8px 30px rgba(37,211,102,0.4);}50%{box-shadow:0 8px 40px rgba(37,211,102,0.7);}}
+
+/* ── FOOTER ── */
+footer{
+  background:rgba(0,0,0,0.5);color:rgba(255,255,255,0.4);
+  text-align:center;padding:32px 24px;font-size:0.82rem;
+  border-top:1px solid rgba(255,255,255,0.05);
+  position:relative;z-index:1;
+}
+footer .logo-footer{
+  font-family:'Playfair Display',serif;font-style:italic;font-size:1.4rem;
+  background:linear-gradient(135deg,var(--rosa),var(--dorado));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  display:block;margin-bottom:8px;
+}
+
+/* ── WA FLOTANTE ── */
+.wa-float{
+  position:fixed;bottom:28px;right:28px;z-index:999;
+  background:linear-gradient(135deg,#25D366,#128C7E);
+  color:white;width:62px;height:62px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;text-decoration:none;
+  box-shadow:0 6px 25px rgba(37,211,102,0.5);
+  animation:floatWa 3s ease-in-out infinite;
+  transition:all 0.3s;
+}
+.wa-float:hover{transform:scale(1.15);box-shadow:0 10px 35px rgba(37,211,102,0.7);}
+@keyframes floatWa{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+.wa-float-badge{
+  position:absolute;top:-4px;right:-4px;
+  background:var(--rosa);color:white;
+  width:20px;height:20px;border-radius:50%;
+  font-size:0.65rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  animation:blink 1.5s ease-in-out infinite;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  nav{padding:12px 20px;}
+  .nav-links{display:none;}
+  .pasos::before{display:none;}
+  .pasos{gap:32px;}
+  .pedido-banner{padding:32px 24px;}
+  .flores-grid{grid-template-columns:1fr;}
+  .hero-stats{gap:28px;}
+}
 </style>
 </head>
 <body>
 
+<!-- Canvas pétalos animados -->
+<canvas id="canvas-petals"></canvas>
+
 <!-- WhatsApp flotante -->
-<a href="https://wa.me/573177874987" target="_blank" class="wa-float" title="Escribinos por WhatsApp">💬</a>
+<a href="https://wa.me/573177874987" target="_blank" class="wa-float">
+  💬
+  <span class="wa-float-badge">1</span>
+</a>
 
 <!-- NAV -->
 <nav>
   <div class="nav-logo">Darcy</div>
   <ul class="nav-links">
     <li><a href="#flores">🌸 Flores</a></li>
-    <li><a href="#desodorante">🌿 Desodorante</a></li>
-    <li><a href="#como-pedir">Cómo pedir</a></li>
-    <li><a href="https://wa.me/573177874987" target="_blank" class="nav-wa">💬 WhatsApp</a></li>
+    <li><a href="#proceso">Cómo pedir</a></li>
+    <li><a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Quiero%20hacer%20un%20pedido%20🌸" target="_blank" class="nav-wa">💬 Pedir ahora</a></li>
   </ul>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-petals petal-1">🌸</div>
-  <div class="hero-petals petal-2">🌺</div>
-  <div class="hero-petals petal-3">🌼</div>
-  <div class="hero-petals petal-4">🌿</div>
-
+  <div class="hero-glow"></div>
   <div class="hero-content">
-    <div class="hero-badge">✨ Hecho con amor en Yolombó, Antioquia</div>
-    <h1>Darcy</h1>
-    <div class="hero-sub">Flores Artesanales & Desodorante Natural</div>
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Flores artesanales únicas · Yolombó, Antioquia
+    </div>
+    <h1><span>Darcy</span></h1>
+    <div class="hero-sub">Flores Artesanales</div>
     <p class="hero-desc">
-      Creaciones únicas hechas a mano, pensadas para regalar momentos inolvidables.
-      Flores de limpia pipas que no se marchitan, y desodorante 100% natural para tu piel.
+      Cada flor es única, hecha a mano con amor.<br>
+      Regala algo que <em>nunca se marchita</em> 🌸
     </p>
     <div class="hero-btns">
-      <a href="#flores" class="btn-primary">🌸 Ver flores</a>
-      <a href="#desodorante" class="btn-secondary">🌿 Desodorante</a>
+      <a href="#flores" class="btn-hero btn-hero-primary">🌸 Ver colección</a>
+      <a href="https://wa.me/573177874987?text=Hola!%20Quiero%20un%20pedido%20personalizado%20🌸" target="_blank" class="btn-hero btn-hero-secondary">✨ Pedido a tu gusto</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num" data-target="50">0</div>
+        <div class="stat-label">Flores vendidas</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" data-target="100">0</div>
+        <div class="stat-label">% hechas a mano</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" data-target="10">0</div>
+        <div class="stat-label">Colores disponibles</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- POR QUÉ DARCY -->
+<section class="why-section">
+  <div class="section-header reveal">
+    <span class="section-label">¿Por qué elegirnos?</span>
+    <h2 class="section-title">Flores que cuentan <span>historias</span></h2>
+    <p class="section-desc">No vendemos flores — vendemos momentos, emociones y recuerdos que duran para siempre.</p>
+  </div>
+  <div class="why-grid">
+    <div class="why-card reveal">
+      <span class="why-icon">🌸</span>
+      <h3>100% Artesanal</h3>
+      <p>Cada flor es hecha a mano, una por una, con dedicación y amor. Ninguna es igual a otra.</p>
+    </div>
+    <div class="why-card reveal">
+      <span class="why-icon">♾️</span>
+      <h3>Duran para siempre</h3>
+      <p>A diferencia de las flores naturales, nuestras flores de limpia pipas jamás se marchitan ni mueren.</p>
+    </div>
+    <div class="why-card reveal">
+      <span class="why-icon">🎨</span>
+      <h3>Tu color, tu diseño</h3>
+      <p>Elegís los colores, el tamaño y los detalles. Hacemos exactamente lo que imaginás.</p>
+    </div>
+    <div class="why-card reveal">
+      <span class="why-icon">💝</span>
+      <h3>Regalo perfecto</h3>
+      <p>Para cumpleaños, aniversarios, San Valentín o simplemente para decir "te quiero".</p>
     </div>
   </div>
 </section>
 
 <!-- FLORES -->
-<section id="flores">
-  <div class="section-header">
-    <div class="section-label">Colección artesanal</div>
-    <h2 class="section-title">Flores que duran para siempre 🌸</h2>
-    <p class="section-desc">
-      Cada ramo es único, hecho a mano con limpia pipas de colores.
-      Elegí el tamaño y te hacemos el arreglo perfecto.
-    </p>
+<section class="flores-section" id="flores">
+  <div class="section-header reveal">
+    <span class="section-label">Colección completa</span>
+    <h2 class="section-title">Nuestras <span>flores</span></h2>
+    <p class="section-desc">Explorá todos los tamaños y colores. Cada arreglo es único y hecho con amor.</p>
   </div>
 
-  <!-- Tabs de tamaño -->
-  <div class="size-tabs">
-    <button class="size-tab active" onclick="filtrarFlores('todas')">Todas</button>
-    <button class="size-tab" onclick="filtrarFlores('pequena')">🌷 Pequeñas — $20.000</button>
-    <button class="size-tab" onclick="filtrarFlores('mediana')">🌸 Medianas — $35.000</button>
-    <button class="size-tab" onclick="filtrarFlores('grande')">🌺 Grandes — $50.000</button>
+  <div class="size-tabs reveal">
+    <button class="size-tab active" onclick="filtrarFlores('todas',this)">🌺 Todas</button>
+    <button class="size-tab" onclick="filtrarFlores('pequena',this)">🌷 Pequeñas — $20.000</button>
+    <button class="size-tab" onclick="filtrarFlores('mediana',this)">🌸 Medianas — $35.000</button>
+    <button class="size-tab" onclick="filtrarFlores('grande',this)">🌺 Grandes — $50.000</button>
   </div>
 
-  <!-- Grid de flores -->
   <div class="flores-grid">
 
     <!-- PEQUEÑAS -->
     <div class="flor-card visible" data-size="pequena">
-      <img src="fotos/f5.jpeg" alt="Florero pequeño morado" class="flor-img" onerror="this.style.background='linear-gradient(135deg,#7b2d8b,#4a0080)';this.style.height='260px'">
-      <div class="flor-info">
+      <div class="flor-img-wrap">
+        <img src="fotos/f5.jpeg" alt="Florero Naranja" class="flor-img" onerror="this.parentElement.style.background='linear-gradient(135deg,#f57c00,#e65100)'">
+        <div class="flor-overlay">
+          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Florero%20Naranja%20pequeño%20🌸" target="_blank" class="btn-overlay">💬 Pedir este</a>
+        </div>
         <span class="flor-tag">Pequeña</span>
-        <div class="flor-nombre">Florero Morado</div>
-        <div class="flor-desc">Flores lilas y moradas en florero decorado. Ideal para escritorio o regalo especial.</div>
+      </div>
+      <div class="flor-info">
+        <div class="flor-nombre">Florero Naranja</div>
+        <div class="flor-desc">Flores naranjas vibrantes en florero decorado con lazo. Ideal para escritorio o regalo especial.</div>
         <div class="flor-footer">
           <div class="flor-precio">$20.000</div>
-          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Florero%20Morado%20pequeño%20%F0%9F%8C%B8" target="_blank" class="btn-pedir">Pedir</a>
+          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Florero%20Naranja%20pequeño%20🌸" target="_blank" class="btn-pedir">Pedir</a>
         </div>
       </div>
     </div>
 
     <div class="flor-card visible" data-size="pequena">
-      <img src="fotos/f6.jpeg" alt="Florero pequeño rosado" class="flor-img" onerror="this.style.background='linear-gradient(135deg,#e91e8c,#c2185b)';this.style.height='260px'">
-      <div class="flor-info">
+      <div class="flor-img-wrap">
+        <img src="fotos/f6.jpeg" alt="Florero Fucsia" class="flor-img" onerror="this.parentElement.style.background='linear-gradient(135deg,#e91e8c,#c2185b)'">
+        <div class="flor-overlay">
+          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Florero%20Fucsia%20pequeño%20🌸" target="_blank" class="btn-overlay">💬 Pedir este</a>
+        </div>
         <span class="flor-tag">Pequeña</span>
-        <div class="flor-nombre">Florero Rosado</div>
-        <div class="flor-desc">Flores fucsia y rosa con perlas decorativas. Delicado y elegante.</div>
+      </div>
+      <div class="flor-info">
+        <div class="flor-nombre">Florero Fucsia</div>
+        <div class="flor-desc">Flores fucsia intensas con perlas decorativas. Delicado, elegante y muy femenino.</div>
         <div class="flor-footer">
           <div class="flor-precio">$20.000</div>
-          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Florero%20Rosado%20pequeño%20%F0%9F%8C%B8" target="_blank" class="btn-pedir">Pedir</a>
+          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Florero%20Fucsia%20pequeño%20🌸" target="_blank" class="btn-pedir">Pedir</a>
         </div>
       </div>
     </div>
 
     <!-- MEDIANAS -->
     <div class="flor-card visible" data-size="mediana">
-      <img src="fotos/f2.jpeg" alt="Ramo mediano rosado" class="flor-img" onerror="this.style.background='linear-gradient(135deg,#f06292,#e91e8c)';this.style.height='260px'">
-      <div class="flor-info">
+      <div class="flor-img-wrap">
+        <img src="fotos/f2.jpeg" alt="Ramo Rosado" class="flor-img" onerror="this.parentElement.style.background='linear-gradient(135deg,#f48fb1,#e91e8c)'">
+        <div class="flor-overlay">
+          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Ramo%20Rosado%20mediano%20🌸" target="_blank" class="btn-overlay">💬 Pedir este</a>
+        </div>
         <span class="flor-tag">Mediana</span>
+      </div>
+      <div class="flor-info">
         <div class="flor-nombre">Ramo Rosado</div>
-        <div class="flor-desc">Hermoso ramo de flores rosadas envuelto en papel decorativo. Perfecto para regalar.</div>
+        <div class="flor-desc">Hermoso ramo de flores rosadas en papel decorativo. Romántico y perfecto para regalar.</div>
         <div class="flor-footer">
           <div class="flor-precio">$35.000</div>
-          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Ramo%20Rosado%20mediano%20%F0%9F%8C%B8" target="_blank" class="btn-pedir">Pedir</a>
+          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Ramo%20Rosado%20mediano%20🌸" target="_blank" class="btn-pedir">Pedir</a>
         </div>
       </div>
     </div>
 
     <div class="flor-card visible" data-size="mediana">
-      <img src="fotos/f7m.jpeg" alt="Ramo mediano azul" class="flor-img" onerror="this.style.background='linear-gradient(135deg,#1976d2,#0d47a1)';this.style.height='260px'">
-      <div class="flor-info">
+      <div class="flor-img-wrap">
+        <img src="fotos/f7m.jpeg" alt="Ramo Rosado & Fucsia" class="flor-img" onerror="this.parentElement.style.background='linear-gradient(135deg,#e91e8c,#ad1457)'">
+        <div class="flor-overlay">
+          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Ramo%20Rosado%20Fucsia%20mediano%20🌸" target="_blank" class="btn-overlay">💬 Pedir este</a>
+        </div>
         <span class="flor-tag">Mediana</span>
-        <div class="flor-nombre">Ramo Azul Dorado</div>
-        <div class="flor-desc">Flores azules con papel holográfico dorado. Elegante y llamativo.</div>
+      </div>
+      <div class="flor-info">
+        <div class="flor-nombre">Ramo Rosado & Fucsia</div>
+        <div class="flor-desc">Mezcla vibrante de rosado y fucsia con perlas. Llamativo y especial.</div>
         <div class="flor-footer">
           <div class="flor-precio">$35.000</div>
-          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Ramo%20Azul%20mediano%20%F0%9F%8C%B8" target="_blank" class="btn-pedir">Pedir</a>
+          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Ramo%20Rosado%20Fucsia%20mediano%20🌸" target="_blank" class="btn-pedir">Pedir</a>
         </div>
       </div>
     </div>
 
     <div class="flor-card visible" data-size="mediana">
-      <img src="fotos/f8m.jpeg" alt="Ramo mediano azul floral" class="flor-img" onerror="this.style.background='linear-gradient(135deg,#29b6f6,#0277bd)';this.style.height='260px'">
-      <div class="flor-info">
-        <span class="flor-tag">Mediana</span>
-        <div class="flor-nombre">Ramo Azul Primavera</div>
-        <div class="flor-desc">Flores celestes con perlas en papel floral multicolor. Fresco y primaveral.</div>
-        <div class="flor-footer">
-          <div class="flor-precio">$35.000</div>
-          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Ramo%20Azul%20Primavera%20mediano%20%F0%9F%8C%B8" target="_blank" class="btn-pedir">Pedir</a>
+      <div class="flor-img-wrap">
+        <img src="fotos/f8m.jpeg" alt="Ramo Púrpura" class="flor-img" onerror="this.parentElement.style.background='linear-gradient(135deg,#7b2fbe,#4a148c)'">
+        <div class="flor-overlay">
+          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Ramo%20Púrpura%20mediano%20🌸" target="_blank" class="btn-overlay">💬 Pedir este</a>
         </div>
-      </div>
-    </div>
-
-    <div class="flor-card visible" data-size="mediana">
-      <img src="fotos/f9m.jpeg" alt="Ramo mediano purpura" class="flor-img" onerror="this.style.background='linear-gradient(135deg,#7b1fa2,#4a148c)';this.style.height='260px'">
-      <div class="flor-info">
         <span class="flor-tag">Mediana</span>
+      </div>
+      <div class="flor-info">
         <div class="flor-nombre">Ramo Púrpura</div>
-        <div class="flor-desc">Flores moradas intensas en papel holográfico plateado. Sofisticado y especial.</div>
+        <div class="flor-desc">Flores púrpuras intensas en papel holográfico plateado. Sofisticado y elegante.</div>
         <div class="flor-footer">
           <div class="flor-precio">$35.000</div>
-          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Ramo%20Púrpura%20mediano%20%F0%9F%8C%B8" target="_blank" class="btn-pedir">Pedir</a>
+          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Ramo%20Púrpura%20mediano%20🌸" target="_blank" class="btn-pedir">Pedir</a>
         </div>
       </div>
     </div>
 
     <div class="flor-card visible" data-size="mediana">
-      <img src="fotos/f10m.jpeg" alt="Ramo mediano rosado verde" class="flor-img" onerror="this.style.background='linear-gradient(135deg,#e91e8c,#2d6a4f)';this.style.height='260px'">
-      <div class="flor-info">
+      <div class="flor-img-wrap">
+        <img src="fotos/f9m.jpeg" alt="Ramo Azul" class="flor-img" onerror="this.parentElement.style.background='linear-gradient(135deg,#1565c0,#0d47a1)'">
+        <div class="flor-overlay">
+          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Ramo%20Azul%20mediano%20🌸" target="_blank" class="btn-overlay">💬 Pedir este</a>
+        </div>
         <span class="flor-tag">Mediana</span>
-        <div class="flor-nombre">Ramo Rosado & Verde</div>
-        <div class="flor-desc">Flores rosas y fucsia con papel verde. Combinación fresca y romántica.</div>
+      </div>
+      <div class="flor-info">
+        <div class="flor-nombre">Ramo Azul</div>
+        <div class="flor-desc">Flores azules celestes con perlas en papel floral multicolor. Fresco y primaveral.</div>
         <div class="flor-footer">
           <div class="flor-precio">$35.000</div>
-          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Ramo%20Rosado%20Verde%20mediano%20%F0%9F%8C%B8" target="_blank" class="btn-pedir">Pedir</a>
+          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Ramo%20Azul%20mediano%20🌸" target="_blank" class="btn-pedir">Pedir</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="flor-card visible" data-size="mediana">
+      <div class="flor-img-wrap">
+        <img src="fotos/f10m.jpeg" alt="Ramo Azul Dorado" class="flor-img" onerror="this.parentElement.style.background='linear-gradient(135deg,#1976d2,#ffd700)'">
+        <div class="flor-overlay">
+          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Ramo%20Azul%20Dorado%20mediano%20🌸" target="_blank" class="btn-overlay">💬 Pedir este</a>
+        </div>
+        <span class="flor-tag">Mediana</span>
+      </div>
+      <div class="flor-info">
+        <div class="flor-nombre">Ramo Azul Dorado</div>
+        <div class="flor-desc">Flores azules con papel holográfico dorado. Combinación elegante y llamativa.</div>
+        <div class="flor-footer">
+          <div class="flor-precio">$35.000</div>
+          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Ramo%20Azul%20Dorado%20mediano%20🌸" target="_blank" class="btn-pedir">Pedir</a>
         </div>
       </div>
     </div>
 
     <!-- GRANDES -->
     <div class="flor-card visible" data-size="grande">
-      <img src="fotos/f3.jpeg" alt="Ramo grande naranja" class="flor-img" onerror="this.style.background='linear-gradient(135deg,#f57c00,#e65100)';this.style.height='260px'">
-      <div class="flor-info">
+      <div class="flor-img-wrap">
+        <img src="fotos/f3.jpeg" alt="Ramo Naranja Grande" class="flor-img" onerror="this.parentElement.style.background='linear-gradient(135deg,#f57c00,#e65100)'">
+        <div class="flor-overlay">
+          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Ramo%20Naranja%20Grande%20🌸" target="_blank" class="btn-overlay">💬 Pedir este</a>
+        </div>
         <span class="flor-tag">Grande</span>
+      </div>
+      <div class="flor-info">
         <div class="flor-nombre">Ramo Naranja Grande</div>
-        <div class="flor-desc">Ramo grande y poblado de flores naranjas en papel holográfico plateado. Impactante y único.</div>
+        <div class="flor-desc">Ramo grande y muy poblado de flores naranjas en papel holográfico plateado. Impactante y único.</div>
         <div class="flor-footer">
           <div class="flor-precio">$50.000</div>
-          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Ramo%20Naranja%20Grande%20%F0%9F%8C%B8" target="_blank" class="btn-pedir">Pedir</a>
+          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20Ramo%20Naranja%20Grande%20🌸" target="_blank" class="btn-pedir">Pedir</a>
         </div>
       </div>
     </div>
 
     <div class="flor-card visible" data-size="grande">
-      <img src="fotos/f4.jpeg" alt="Ramo grande amarillo maceta" class="flor-img" onerror="this.style.background='linear-gradient(135deg,#fdd835,#f9a825)';this.style.height='260px'">
-      <div class="flor-info">
+      <div class="flor-img-wrap">
+        <img src="fotos/f4.jpeg" alt="Maceta Amarilla Grande" class="flor-img" onerror="this.parentElement.style.background='linear-gradient(135deg,#fdd835,#f9a825)'">
+        <div class="flor-overlay">
+          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20la%20Maceta%20Amarilla%20Grande%20🌸" target="_blank" class="btn-overlay">💬 Pedir este</a>
+        </div>
         <span class="flor-tag">Grande</span>
+      </div>
+      <div class="flor-info">
         <div class="flor-nombre">Maceta Amarilla Grande</div>
         <div class="flor-desc">Arreglo grande en maceta con flores amarillas y naranjas. Muy poblado, ideal para decorar espacios.</div>
         <div class="flor-footer">
           <div class="flor-precio">$50.000</div>
-          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20la%20Maceta%20Amarilla%20Grande%20%F0%9F%8C%B8" target="_blank" class="btn-pedir">Pedir</a>
+          <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20la%20Maceta%20Amarilla%20Grande%20🌸" target="_blank" class="btn-pedir">Pedir</a>
         </div>
       </div>
     </div>
@@ -871,139 +732,184 @@
   </div>
 
   <!-- Pedido personalizado -->
-  <div class="pedido-banner">
-    <h3>🎨 ¿Querés algo personalizado?</h3>
+  <div class="pedido-banner reveal">
+    <h3>🎨 ¿Querés algo único?</h3>
     <p>
-      Elegí los colores, el tamaño, los detalles del moño y el tipo de papel.
-      Cada pedido personalizado es único — hacemos exactamente lo que soñás.
+      Elegís los colores, el tamaño, el tipo de papel y los detalles del moño.<br>
+      <strong style="color:rgba(255,255,255,0.8)">Hacemos exactamente lo que soñás.</strong>
     </p>
-    <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Quiero%20hacer%20un%20pedido%20personalizado%20de%20flores%20%F0%9F%8C%B8%20me%20podés%20asesorar?" target="_blank" class="btn-primary">💬 Pedir arreglo personalizado</a>
+    <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Quiero%20un%20pedido%20personalizado%20de%20flores%20🌸%20¿me%20podés%20asesorar?" target="_blank" class="btn-hero btn-hero-primary">💬 Pedir arreglo personalizado</a>
   </div>
 </section>
 
-<!-- DESODORANTE -->
-<section id="desodorante">
-  <div class="deso-container">
-    <div class="deso-img-wrap">
-      <img src="LOGO.jpeg" alt="Darcy Desodorante Natural" class="deso-img">
-      <div class="deso-badge-float">100% Natural<br>Apto piel sensible</div>
-    </div>
-    <div class="deso-content">
-      <div class="section-label">Cuidado natural</div>
-      <h2>Darcy</h2>
-      <div class="deso-tagline">Desodorante Natural</div>
-      <p>
-        Tu piel, más blanca y libre. Fórmula 100% natural, orgánica y libre de químicos.
-        Blanquea, elimina el mal olor y cuida tu piel con ingredientes naturales.
-        Apto para piel sensible.
-      </p>
-      <div class="beneficios">
-        <div class="beneficio">
-          <div class="beneficio-icon">🍃</div>
-          <span>100% orgánico</span>
-        </div>
-        <div class="beneficio">
-          <div class="beneficio-icon">✨</div>
-          <span>Blanquea la piel</span>
-        </div>
-        <div class="beneficio">
-          <div class="beneficio-icon">🛡️</div>
-          <span>Elimina el mal olor</span>
-        </div>
-        <div class="beneficio">
-          <div class="beneficio-icon">⏱️</div>
-          <span>Frescura duradera</span>
-        </div>
-        <div class="beneficio">
-          <div class="beneficio-icon">🌿</div>
-          <span>Sin químicos</span>
-        </div>
-        <div class="beneficio">
-          <div class="beneficio-icon">💧</div>
-          <span>Piel sensible</span>
-        </div>
-      </div>
-      <div class="deso-precios">
-        <div class="deso-precio-card">
-          <div class="deso-precio-nombre">Tarro mediano</div>
-          <div class="deso-precio-valor">$20.000</div>
-        </div>
-        <div class="deso-precio-card">
-          <div class="deso-precio-nombre">Spray reenvasado</div>
-          <div class="deso-precio-valor">$15.000</div>
-        </div>
-        <div class="deso-precio-card">
-          <div class="deso-precio-nombre">Spray vacío</div>
-          <div class="deso-precio-valor">$2.000</div>
-        </div>
-      </div>
-      <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Me%20interesa%20el%20desodorante%20natural%20🌿" target="_blank" class="btn-primary">💬 Pedir ahora</a>
-    </div>
+<!-- PROCESO -->
+<section class="proceso-section" id="proceso">
+  <div class="section-header reveal">
+    <span class="section-label">Súper fácil</span>
+    <h2 class="section-title">¿Cómo <span>pedir</span>?</h2>
+    <p class="section-desc">En 3 pasos tenés tu arreglo perfecto camino a vos.</p>
   </div>
-</section>
-
-<!-- CÓMO PEDIR -->
-<section id="como-pedir">
-  <div class="section-header">
-    <div class="section-label">Proceso de compra</div>
-    <h2 class="section-title">¿Cómo hacer tu pedido?</h2>
-    <p class="section-desc">Fácil, rápido y directo. En 3 pasos tenés tu pedido en camino.</p>
-  </div>
-
   <div class="pasos">
-    <div class="paso">
-      <div class="paso-num">01</div>
-      <div class="paso-icon">🌸</div>
-      <h3>Elegís tu producto</h3>
-      <p>Seleccioná las flores, el tamaño y los colores que querés. O el desodorante que necesitás.</p>
+    <div class="paso reveal">
+      <div class="paso-num-wrap">🌸</div>
+      <h3>Elegís</h3>
+      <p>Seleccioná el tamaño, los colores y el diseño que más te guste de nuestra colección.</p>
     </div>
-    <div class="paso">
-      <div class="paso-num">02</div>
-      <div class="paso-icon">💬</div>
-      <h3>Nos escribís</h3>
-      <p>Mandanos un mensaje por WhatsApp con tu pedido. Te respondemos enseguida.</p>
+    <div class="paso reveal">
+      <div class="paso-num-wrap">💬</div>
+      <h3>Escribís</h3>
+      <p>Nos mandás un mensaje por WhatsApp con tu pedido. ¡Respondemos enseguida!</p>
     </div>
-    <div class="paso">
-      <div class="paso-num">03</div>
-      <div class="paso-icon">🎁</div>
-      <h3>Recibís tu pedido</h3>
-      <p>Coordinamos la entrega o el envío. Tu producto llega listo para regalar.</p>
+    <div class="paso reveal">
+      <div class="paso-num-wrap">🎁</div>
+      <h3>Recibís</h3>
+      <p>Coordinamos la entrega. Tu arreglo llega listo para sorprender a quien querés.</p>
     </div>
   </div>
 </section>
 
 <!-- CTA FINAL -->
-<div class="cta-final">
-  <h2>¿Lista para sorprender? 💕</h2>
-  <p>Escribinos y hacemos el arreglo perfecto para vos o para quien querés regalar algo especial.</p>
-  <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Quiero%20hacer%20un%20pedido%20%F0%9F%8C%B8" target="_blank" class="btn-wa">
-    <span class="wa-icon">💬</span>
-    Escribir por WhatsApp
-  </a>
-</div>
+<section class="cta-section">
+  <div class="cta-content reveal">
+    <h2>¿Lista para sorprender? 💕</h2>
+    <p>Escribinos ahora y hacemos el arreglo perfecto para vos o para quien más querés.</p>
+    <a href="https://wa.me/573177874987?text=Hola%20Darcy!%20Quiero%20hacer%20un%20pedido%20🌸" target="_blank" class="btn-wa-big">
+      💬 Escribir por WhatsApp
+    </a>
+  </div>
+</section>
 
 <!-- FOOTER -->
 <footer>
-  <span>Darcy</span> — Flores Artesanales & Desodorante Natural<br>
-  <small>Yolombó, Antioquia, Colombia &nbsp;·&nbsp; +57 317 787 4987</small>
+  <span class="logo-footer">Darcy Flores</span>
+  Flores Artesanales · Yolombó, Antioquia, Colombia<br>
+  <small>+57 317 787 4987 · Hecho con 💕 a mano</small>
 </footer>
 
 <script>
-function filtrarFlores(size) {
-  // Actualizar tabs
-  document.querySelectorAll('.size-tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
+// ── PÉTALOS ANIMADOS ──
+const canvas = document.getElementById('canvas-petals');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
 
-  // Mostrar/ocultar cards
-  document.querySelectorAll('.flor-card').forEach(card => {
-    if (size === 'todas' || card.dataset.size === size) {
-      card.classList.add('visible');
-    } else {
-      card.classList.remove('visible');
+const petals = [];
+const colors = ['#FF006E','#FF4D94','#FFD700','#E91E8C','#FF69B4','#FF1493'];
+const shapes = ['🌸','🌺','✿','❀','🌷'];
+
+for (let i = 0; i < 25; i++) {
+  petals.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    size: Math.random() * 16 + 8,
+    speedX: (Math.random() - 0.5) * 0.8,
+    speedY: Math.random() * 1.2 + 0.3,
+    opacity: Math.random() * 0.4 + 0.1,
+    rotation: Math.random() * 360,
+    rotSpeed: (Math.random() - 0.5) * 2,
+    shape: shapes[Math.floor(Math.random() * shapes.length)]
+  });
+}
+
+function animatePetals() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  petals.forEach(p => {
+    ctx.save();
+    ctx.globalAlpha = p.opacity;
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rotation * Math.PI / 180);
+    ctx.font = `${p.size}px serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(p.shape, 0, 0);
+    ctx.restore();
+    p.x += p.speedX;
+    p.y += p.speedY;
+    p.rotation += p.rotSpeed;
+    if (p.y > window.innerHeight + 20) {
+      p.y = -20;
+      p.x = Math.random() * window.innerWidth;
+    }
+    if (p.x < -20) p.x = window.innerWidth + 20;
+    if (p.x > window.innerWidth + 20) p.x = -20;
+  });
+  requestAnimationFrame(animatePetals);
+}
+animatePetals();
+
+// ── CONTADOR ANIMADO ──
+function animateCounter(el, target) {
+  let current = 0;
+  const increment = target / 60;
+  const timer = setInterval(() => {
+    current += increment;
+    if (current >= target) {
+      current = target;
+      clearInterval(timer);
+    }
+    el.textContent = Math.floor(current) + (el.dataset.suffix || '+');
+  }, 25);
+}
+
+const statsObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('.stat-num').forEach(el => {
+        animateCounter(el, parseInt(el.dataset.target));
+      });
+      statsObserver.disconnect();
+    }
+  });
+});
+const statsEl = document.querySelector('.hero-stats');
+if (statsEl) statsObserver.observe(statsEl);
+
+// Añadir sufijos
+document.querySelectorAll('.stat-num').forEach((el, i) => {
+  if (i === 1) el.dataset.suffix = '%';
+  else el.dataset.suffix = '+';
+});
+
+// ── SCROLL REVEAL ──
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => {
+        entry.target.classList.add('visible');
+      }, i * 100);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => {
+  revealObserver.observe(el);
+});
+
+// ── FILTRO FLORES ──
+function filtrarFlores(size, btn) {
+  document.querySelectorAll('.size-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.flor-card').forEach((card, i) => {
+    const show = size === 'todas' || card.dataset.size === size;
+    card.classList.remove('visible');
+    if (show) {
+      setTimeout(() => card.classList.add('visible'), i * 60);
     }
   });
 }
-</script>
 
+// ── NAV SCROLL ──
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('nav');
+  if (window.scrollY > 50) {
+    nav.style.background = 'rgba(26,10,46,0.98)';
+  } else {
+    nav.style.background = 'rgba(26,10,46,0.85)';
+  }
+});
+</script>
 </body>
 </html>

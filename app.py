@@ -79,8 +79,8 @@ def check_password():
         st.markdown("### Acceso privado")
 
         USUARIOS = {
-            "Denstron": "danieL0205",
-            "Darcy": "Darcy0205"
+            "daniel": "daniel2026",
+            "darcy": "natural2026"
         }
 
         usuario = st.text_input("Usuario")
@@ -99,7 +99,7 @@ if not check_password():
     st.stop()
 
 # ── Conexión Google Sheets ─────────────────────────────────────────────────────
-@st.cache_resource
+@st.cache_resource(ttl=600)
 def conectar_sheets():
     if "gcp_service_account" in st.secrets:
         creds = Credentials.from_service_account_info(
@@ -110,37 +110,59 @@ def conectar_sheets():
     cliente = gspread.authorize(creds)
     return cliente.open_by_url(SHEET_URL)
 
+# ── Caché de datos — se refresca cada 3 minutos ────────────────────────────────
+# Esto evita el error de cuota de Google Sheets API
+@st.cache_data(ttl=180)
+def get_config(_sheet):
+    cfg = _sheet.worksheet("CONFIG").get_all_records()
+    return {row["clave"]: float(row["valor"]) for row in cfg}
+
+@st.cache_data(ttl=180)
+def get_config_flores(_sheet):
+    cfg = _sheet.worksheet("CONFIG_FLORES").get_all_records()
+    return {row["clave"]: float(row["valor"]) for row in cfg}
+
+@st.cache_data(ttl=180)
+def get_inventario(_sheet):
+    return _sheet.worksheet("INVENTARIO").get_all_records()
+
+@st.cache_data(ttl=180)
+def get_ventas(_sheet):
+    return _sheet.worksheet("VENTAS").get_all_records()
+
+@st.cache_data(ttl=180)
+def get_ventas_flores(_sheet):
+    return _sheet.worksheet("VENTAS_FLORES").get_all_records()
+
+@st.cache_data(ttl=180)
+def get_compras(_sheet):
+    return _sheet.worksheet("COMPRAS").get_all_records()
+
+@st.cache_data(ttl=180)
+def get_compras_flores(_sheet):
+    return _sheet.worksheet("COMPRAS_FLORES").get_all_records()
+
+@st.cache_data(ttl=180)
+def get_clientes(_sheet):
+    return _sheet.worksheet("CLIENTES").get_all_records()
+
+@st.cache_data(ttl=180)
+def get_pedidos(_sheet):
+    return _sheet.worksheet("PEDIDOS_PENDIENTES").get_all_records()
+
 def get_ws(sheet, nombre):
     return sheet.worksheet(nombre)
 
-def get_config(sheet):
-    cfg = sheet.worksheet("CONFIG").get_all_records()
-    return {row["clave"]: float(row["valor"]) for row in cfg}
-
-def get_config_flores(sheet):
-    cfg = sheet.worksheet("CONFIG_FLORES").get_all_records()
-    return {row["clave"]: float(row["valor"]) for row in cfg}
-
-def get_inventario(sheet):
-    return sheet.worksheet("INVENTARIO").get_all_records()
-
-def get_ventas(sheet):
-    return sheet.worksheet("VENTAS").get_all_records()
-
-def get_ventas_flores(sheet):
-    return sheet.worksheet("VENTAS_FLORES").get_all_records()
-
-def get_compras(sheet):
-    return sheet.worksheet("COMPRAS").get_all_records()
-
-def get_compras_flores(sheet):
-    return sheet.worksheet("COMPRAS_FLORES").get_all_records()
-
-def get_clientes(sheet):
-    return sheet.worksheet("CLIENTES").get_all_records()
-
-def get_pedidos(sheet):
-    return sheet.worksheet("PEDIDOS_PENDIENTES").get_all_records()
+def limpiar_cache():
+    get_config.clear()
+    get_config_flores.clear()
+    get_inventario.clear()
+    get_ventas.clear()
+    get_ventas_flores.clear()
+    get_compras.clear()
+    get_compras_flores.clear()
+    get_clientes.clear()
+    get_pedidos.clear()
 
 def actualizar_inventario(sheet, producto, delta, fecha):
     inv_ws = sheet.worksheet("INVENTARIO")
@@ -166,7 +188,7 @@ try:
 except:
     st.sidebar.markdown("## 🌿 Darcy")
 
-nombre_usuario = "Darcy" if st.session_state.usuario_actual == "Darcy" else "Daniel"
+nombre_usuario = "Daniel" if st.session_state.usuario_actual == "daniel" else "Darcy"
 st.sidebar.markdown(f"**Hola, {nombre_usuario} 👋**")
 st.sidebar.markdown("---")
 
@@ -190,6 +212,9 @@ menu_flores = st.sidebar.radio("", [
 ], key="menu_flores")
 
 st.sidebar.markdown("---")
+if st.sidebar.button("🔄 Refrescar datos"):
+    limpiar_cache()
+    st.rerun()
 if st.sidebar.button("🚪 Cerrar sesión"):
     st.session_state.autenticado = False
     st.rerun()
@@ -423,6 +448,7 @@ elif menu == "🛒 Registrar Compra":
         fecha = datetime.now().strftime("%Y-%m-%d %H:%M")
         sheet.worksheet("COMPRAS").append_row([fecha, producto, int(cantidad), precio_unitario, gasto_envio])
         actualizar_inventario(sheet, producto, int(cantidad), fecha)
+        limpiar_cache()
         st.success("✅ Compra registrada correctamente")
         st.info(f"""
         **Resumen:**
@@ -483,7 +509,7 @@ elif menu == "💰 Registrar Venta":
             sheet.worksheet("VENTAS").append_row([fecha, producto, int(cantidad), cliente, estado_pago, precio_unit, abono_inicial])
             actualizar_inventario(sheet, producto, -int(cantidad), fecha)
             registrar_cliente_si_nuevo(sheet, cliente, telefono)
-
+            limpiar_cache()
             st.success("✅ Venta registrada")
             st.info(f"""
             **Resumen:**
@@ -558,7 +584,7 @@ elif menu == "🌸 Registrar Venta Flor":
                 costo_unitario, cliente, estado_pago, abono_inicial, nota
             ])
             registrar_cliente_si_nuevo(sheet, cliente, telefono)
-
+            limpiar_cache()
             st.success("✅ Venta de flor registrada")
             st.info(f"""
             **Resumen:**
@@ -589,6 +615,7 @@ elif menu == "🛒 Registrar Compra Material":
         total = cantidad * precio_unitario
         fecha = datetime.now().strftime("%Y-%m-%d %H:%M")
         sheet.worksheet("COMPRAS_FLORES").append_row([fecha, material, int(cantidad), precio_unitario, total])
+        limpiar_cache()
         st.success(f"✅ Compra registrada — Total: ${total:,.0f}")
 
 # ══════════════════════════════════════════════════════════════════════════════
