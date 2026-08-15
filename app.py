@@ -79,8 +79,8 @@ def check_password():
         st.markdown("### Acceso privado")
 
         USUARIOS = {
-            "Denstron": "danieL0205",
-            "Darcy": "Darcy0205"
+            "daniel": "daniel2026",
+            "darcy": "natural2026"
         }
 
         usuario = st.text_input("Usuario")
@@ -188,7 +188,7 @@ try:
 except:
     st.sidebar.markdown("## 🌿 Darcy")
 
-nombre_usuario = "Daniel" if st.session_state.usuario_actual == "Darcy" else "Daniel"
+nombre_usuario = "Daniel" if st.session_state.usuario_actual == "daniel" else "Darcy"
 st.sidebar.markdown(f"**Hola, {nombre_usuario} 👋**")
 st.sidebar.markdown("---")
 

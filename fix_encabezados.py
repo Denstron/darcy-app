@@ -10,31 +10,20 @@ creds = Credentials.from_service_account_file("credenciales.json", scopes=SCOPES
 cliente = gspread.authorize(creds)
 sheet = cliente.open_by_url("https://docs.google.com/spreadsheets/d/1InoW_Xvb5KUGlvbJnOV6zaOAik706ZoV4FwSJIx-xzU/edit")
 
-# ── Actualizar CONFIG con todos los productos correctos ──
-cfg = sheet.worksheet("CONFIG")
-cfg.clear()
-cfg.append_row(["clave", "valor"])
-cfg.append_row(["costo_tarro_mediano", 10200])
-cfg.append_row(["precio_tarro_mediano", 20000])
-cfg.append_row(["costo_tarrito_spray_vacio", 1800])
-cfg.append_row(["precio_tarrito_spray_vacio", 2000])
-cfg.append_row(["costo_tarrito_spray_lleno", 1800])
-cfg.append_row(["precio_tarrito_spray_lleno", 15000])
-cfg.append_row(["porcentaje_reinversion", 60])
+# COMPRAS — insertar encabezado en fila 1
+compras = sheet.worksheet("COMPRAS")
+compras.insert_row(["fecha", "producto", "cantidad", "precio_unitario", "gasto_envio"], index=1)
 
-# ── Actualizar INVENTARIO con el nuevo producto ──
-inv = sheet.worksheet("INVENTARIO")
-inv_data = inv.get_all_records()
-nombres_actuales = [row["producto"] for row in inv_data]
+# VENTAS
+ventas = sheet.worksheet("VENTAS")
+ventas.insert_row(["fecha", "producto", "cantidad", "cliente", "estado_pago", "precio_unitario_venta"], index=1)
 
-if "Tarrito spray" in nombres_actuales:
-    # renombrar "Tarrito spray" -> "Tarrito spray vacío" si existe
-    for i, row in enumerate(inv_data):
-        if row["producto"] == "Tarrito spray":
-            inv.update_cell(i + 2, 1, "Tarrito spray vacío")
-            break
+# CLIENTES
+clientes = sheet.worksheet("CLIENTES")
+clientes.insert_row(["nombre", "telefono"], index=1)
 
-if "Tarrito spray lleno" not in [r["producto"] for r in inv.get_all_records()]:
-    inv.append_row(["Tarrito spray lleno", 0, ""])
+# PEDIDOS_PENDIENTES
+pedidos = sheet.worksheet("PEDIDOS_PENDIENTES")
+pedidos.insert_row(["fecha_pedido", "cliente", "producto", "cantidad"], index=1)
 
-print("✅ CONFIG e INVENTARIO actualizados correctamente")
+print("✅ Encabezados agregados correctamente")
