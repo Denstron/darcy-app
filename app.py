@@ -110,8 +110,6 @@ def conectar_sheets():
     cliente = gspread.authorize(creds)
     return cliente.open_by_url(SHEET_URL)
 
-# ── Caché de datos — se refresca cada 3 minutos ────────────────────────────────
-# Esto evita el error de cuota de Google Sheets API
 @st.cache_data(ttl=180)
 def get_config(_sheet):
     cfg = _sheet.worksheet("CONFIG").get_all_records()
@@ -150,9 +148,6 @@ def get_clientes(_sheet):
 def get_pedidos(_sheet):
     return _sheet.worksheet("PEDIDOS_PENDIENTES").get_all_records()
 
-def get_ws(sheet, nombre):
-    return sheet.worksheet(nombre)
-
 def limpiar_cache():
     get_config.clear()
     get_config_flores.clear()
@@ -172,7 +167,37 @@ def actualizar_inventario(sheet, producto, delta, fecha):
             nueva_cantidad = int(row["cantidad"]) + delta
             inv_ws.update_cell(i + 2, 2, nueva_cantidad)
             inv_ws.update_cell(i + 2, 3, fecha)
-            break
+            return True
+    return False
+
+def agregar_producto_inventario(sheet, producto, cantidad, fecha):
+    """Agrega un producto nuevo al inventario si no existe."""
+    inv_ws = sheet.worksheet("INVENTARIO")
+    inv_data = inv_ws.get_all_records()
+    nombres = [r["producto"] for r in inv_data]
+    if producto not in nombres:
+        inv_ws.append_row([producto, cantidad, fecha])
+    else:
+        actualizar_inventario(sheet, producto, cantidad, fecha)
+
+def guardar_precios_config(sheet, producto, costo_unit, precio_venta):
+    """Guarda o actualiza precios en CONFIG para un producto."""
+    cfg_ws = sheet.worksheet("CONFIG")
+    cfg_data = cfg_ws.get_all_values()
+    clave_costo = f"costo_{producto.lower().replace(' ', '_').replace('.', '')}"
+    clave_precio = f"precio_{producto.lower().replace(' ', '_').replace('.', '')}"
+
+    claves_existentes = {row[0]: i + 1 for i, row in enumerate(cfg_data)}
+
+    if clave_costo in claves_existentes:
+        cfg_ws.update_cell(claves_existentes[clave_costo], 2, costo_unit)
+    else:
+        cfg_ws.append_row([clave_costo, costo_unit])
+
+    if clave_precio in claves_existentes:
+        cfg_ws.update_cell(claves_existentes[clave_precio], 2, precio_venta)
+    else:
+        cfg_ws.append_row([clave_precio, precio_venta])
 
 def registrar_cliente_si_nuevo(sheet, nombre, telefono):
     clientes_ws = sheet.worksheet("CLIENTES")
@@ -188,7 +213,7 @@ try:
 except:
     st.sidebar.markdown("## 🌿 Darcy")
 
-nombre_usuario = "Daniel" if st.session_state.usuario_actual == "daniel" else "Darcy"
+nombre_usuario = "Darcy" if st.session_state.usuario_actual == "Darcy" else "Daniel"
 st.sidebar.markdown(f"**Hola, {nombre_usuario} 👋**")
 st.sidebar.markdown("---")
 
@@ -219,11 +244,8 @@ if st.sidebar.button("🚪 Cerrar sesión"):
     st.session_state.autenticado = False
     st.rerun()
 
-# Determinar qué menú está activo
 if "menu_activo" not in st.session_state:
     st.session_state.menu_activo = "deso"
-
-# Detectar cuál se usó último
 if "prev_deso" not in st.session_state:
     st.session_state.prev_deso = menu_deso
 if "prev_flores" not in st.session_state:
@@ -238,13 +260,6 @@ elif menu_flores != st.session_state.prev_flores:
 
 menu = menu_deso if st.session_state.menu_activo == "deso" else menu_flores
 
-PRODUCTOS = ["Tarro mediano", "Tarrito spray vacío", "Tarrito spray lleno"]
-PRECIOS_KEY = {
-    "Tarro mediano": ("costo_tarro_mediano", "precio_tarro_mediano"),
-    "Tarrito spray vacío": ("costo_tarrito_spray_vacio", "precio_tarrito_spray_vacio"),
-    "Tarrito spray lleno": ("costo_tarrito_spray_lleno", "precio_tarrito_spray_lleno"),
-}
-
 TIPOS_FLOR = ["Flor grande", "Flor mediana", "Flor pequeña", "Pedido personalizado"]
 FLORES_CONFIG_KEY = {
     "Flor grande": ("costo_flor_grande", "precio_flor_grande"),
@@ -252,6 +267,19 @@ FLORES_CONFIG_KEY = {
     "Flor pequeña": ("costo_flor_pequena", "precio_flor_pequena"),
     "Pedido personalizado": ("costo_flor_pedido", "precio_flor_pedido"),
 }
+
+# ── Helpers dinámicos de productos ────────────────────────────────────────────
+def get_productos_inventario(sheet):
+    """Retorna lista de productos del inventario."""
+    inv = get_inventario(sheet)
+    return [r["producto"] for r in inv]
+
+def get_precios_desde_config(config, producto):
+    """Busca costo y precio de venta de un producto en CONFIG."""
+    clave_base = producto.lower().replace(' ', '_').replace('.', '')
+    costo = config.get(f"costo_{clave_base}", 0.0)
+    precio = config.get(f"precio_{clave_base}", 0.0)
+    return costo, precio
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 📊 DASHBOARD DESODORANTE
@@ -264,8 +292,6 @@ if menu == "📊 Dashboard Darcy":
     compras = get_compras(sheet)
     inventario = get_inventario(sheet)
 
-    precios_costo = {p: config[k[0]] for p, k in PRECIOS_KEY.items() if k[0] in config}
-
     total_vendido = 0
     total_ganancia = 0
     total_pendiente = 0
@@ -276,25 +302,24 @@ if menu == "📊 Dashboard Darcy":
         producto = v["producto"]
         ingreso = cantidad * precio
         abonado = float(v.get("abonado", 0) or 0)
+        costo_unit, _ = get_precios_desde_config(config, producto)
         total_vendido += ingreso
 
         if v["estado_pago"] == "pendiente":
             saldo = ingreso - abonado
             total_pendiente += saldo
-            costo_total_venta = precios_costo.get(producto, 0) * cantidad
             if ingreso > 0:
                 proporcion_pagada = abonado / ingreso
-                total_ganancia += (ingreso - costo_total_venta) * proporcion_pagada
+                total_ganancia += (ingreso - costo_unit * cantidad) * proporcion_pagada
         else:
-            ganancia = (precio - precios_costo.get(producto, 0)) * cantidad
-            total_ganancia += ganancia
+            total_ganancia += (precio - costo_unit) * cantidad
 
     total_invertido = sum(
         int(c["cantidad"]) * float(c["precio_unitario"]) + float(c["gasto_envio"])
         for c in compras
     ) if compras else 0
 
-    reinvertir = total_ganancia * (config["porcentaje_reinversion"] / 100)
+    reinvertir = total_ganancia * (config.get("porcentaje_reinversion", 60) / 100)
     libre = total_ganancia - reinvertir
 
     col1, col2, col3, col4 = st.columns(4)
@@ -305,7 +330,7 @@ if menu == "📊 Dashboard Darcy":
 
     st.markdown("---")
     col5, col6 = st.columns(2)
-    col5.metric(f"🔄 Reinvertir ({int(config['porcentaje_reinversion'])}%)", f"${reinvertir:,.0f}")
+    col5.metric(f"🔄 Reinvertir ({int(config.get('porcentaje_reinversion', 60))}%)", f"${reinvertir:,.0f}")
     col6.metric("🎉 Ganancia libre", f"${libre:,.0f}")
 
     st.markdown("---")
@@ -412,7 +437,7 @@ elif menu == "📊 Dashboard Flores":
         st.info("Aún no hay ventas de flores registradas.")
 
 # ══════════════════════════════════════════════════════════════════════════════
-# 📦 INVENTARIO DESODORANTE
+# 📦 INVENTARIO
 # ══════════════════════════════════════════════════════════════════════════════
 elif menu == "📦 Inventario":
     st.title("📦 Inventario Desodorante")
@@ -426,36 +451,101 @@ elif menu == "📦 Inventario":
             if item["ultima_actualizacion"]:
                 st.caption(f"Última actualización: {item['ultima_actualizacion']}")
     st.markdown("---")
-    st.dataframe(pd.DataFrame(inventario), use_container_width=True)
+    config = get_config(sheet)
+    st.subheader("💰 Precios configurados")
+    filas_precios = []
+    inventario_nombres = [r["producto"] for r in inventario]
+    for prod in inventario_nombres:
+        costo, precio = get_precios_desde_config(config, prod)
+        if precio > 0:
+            ganancia = precio - costo
+            margen = (ganancia / precio * 100) if precio > 0 else 0
+            filas_precios.append({
+                "Producto": prod,
+                "Costo": f"${costo:,.0f}",
+                "Precio venta": f"${precio:,.0f}",
+                "Ganancia unit.": f"${ganancia:,.0f}",
+                "Margen": f"{margen:.0f}%"
+            })
+    if filas_precios:
+        st.dataframe(pd.DataFrame(filas_precios), use_container_width=True)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 🛒 REGISTRAR COMPRA DESODORANTE
 # ══════════════════════════════════════════════════════════════════════════════
 elif menu == "🛒 Registrar Compra":
     st.title("🛒 Registrar Compra Desodorante")
-    st.caption("Cada vez que comprás desde Montería, registrá acá.")
+    st.caption("Registrá cada compra desde Montería. Podés agregar productos nuevos.")
+
+    config = get_config(sheet)
+    productos_actuales = get_productos_inventario(sheet)
+
+    tipo_producto = st.radio(
+        "¿Es un producto que ya tenés o uno nuevo?",
+        ["Producto existente", "Producto nuevo"],
+        horizontal=True
+    )
 
     with st.form("form_compra"):
-        producto = st.selectbox("Producto", PRODUCTOS)
+        if tipo_producto == "Producto existente":
+            producto = st.selectbox("Producto", productos_actuales)
+            costo_actual, precio_actual = get_precios_desde_config(config, producto)
+            st.caption(f"Precio de venta actual: **${precio_actual:,.0f}**")
+        else:
+            producto = st.text_input("Nombre del producto nuevo (ej: Tarro 500ml)")
+            costo_actual = 0.0
+            precio_actual = 0.0
+
         cantidad = st.number_input("Cantidad comprada", min_value=1, step=1)
-        precio_unitario = st.number_input("Precio unitario ($)", min_value=0.0, step=100.0)
+        precio_unitario = st.number_input(
+            "Precio de compra por unidad ($)",
+            min_value=0.0,
+            value=float(costo_actual),
+            step=100.0
+        )
+        precio_venta = st.number_input(
+            "Precio de venta por unidad ($)",
+            min_value=0.0,
+            value=float(precio_actual),
+            step=1000.0,
+            help="Este precio quedará guardado y se usará automáticamente al vender"
+        )
         gasto_envio = st.number_input("Gasto de envío ($)", min_value=0.0, step=1000.0)
         submitted = st.form_submit_button("Registrar compra", use_container_width=True)
 
     if submitted:
-        costo_total = (cantidad * precio_unitario) + gasto_envio
-        costo_real_unitario = costo_total / cantidad
-        fecha = datetime.now().strftime("%Y-%m-%d %H:%M")
-        sheet.worksheet("COMPRAS").append_row([fecha, producto, int(cantidad), precio_unitario, gasto_envio])
-        actualizar_inventario(sheet, producto, int(cantidad), fecha)
-        limpiar_cache()
-        st.success("✅ Compra registrada correctamente")
-        st.info(f"""
-        **Resumen:**
-        - Producto: {producto} — {int(cantidad)} unidades
-        - Inversión total: ${costo_total:,.0f}
-        - Costo real por unidad: ${costo_real_unitario:,.0f}
-        """)
+        if tipo_producto == "Producto nuevo" and not producto.strip():
+            st.error("Escribí el nombre del producto nuevo.")
+        elif precio_venta == 0:
+            st.error("El precio de venta no puede ser $0.")
+        else:
+            producto = producto.strip()
+            costo_total = (cantidad * precio_unitario) + gasto_envio
+            costo_real_unitario = costo_total / cantidad
+            fecha = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+            # Guardar compra
+            sheet.worksheet("COMPRAS").append_row([fecha, producto, int(cantidad), precio_unitario, gasto_envio])
+
+            # Actualizar o crear en inventario
+            if tipo_producto == "Producto nuevo":
+                agregar_producto_inventario(sheet, producto, int(cantidad), fecha)
+            else:
+                actualizar_inventario(sheet, producto, int(cantidad), fecha)
+
+            # Guardar precios en CONFIG
+            guardar_precios_config(sheet, producto, precio_unitario, precio_venta)
+
+            limpiar_cache()
+            st.success("✅ Compra registrada correctamente")
+            st.info(f"""
+            **Resumen:**
+            - Producto: {producto} — {int(cantidad)} unidades
+            - Inversión total: ${costo_total:,.0f}
+            - Costo real por unidad (con envío): ${costo_real_unitario:,.0f}
+            - Precio de venta configurado: ${precio_venta:,.0f}
+            - Ganancia estimada por unidad: ${precio_venta - costo_real_unitario:,.0f}
+            """)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 💰 REGISTRAR VENTA DESODORANTE
@@ -466,8 +556,7 @@ elif menu == "💰 Registrar Venta":
     config = get_config(sheet)
     inventario = get_inventario(sheet)
     inv_dict = {item["producto"]: int(item["cantidad"]) for item in inventario}
-    precios_venta = {p: config[k[1]] for p, k in PRECIOS_KEY.items() if k[1] in config}
-    precios_costo = {p: config[k[0]] for p, k in PRECIOS_KEY.items() if k[0] in config}
+    productos_actuales = [r["producto"] for r in inventario]
 
     clientes_existentes = get_clientes(sheet)
     nombres_existentes = sorted([c["nombre"] for c in clientes_existentes])
@@ -484,8 +573,16 @@ elif menu == "💰 Registrar Venta":
             st.caption(f"Cliente: **{cliente}** {'— ' + tel_actual if tel_actual else ''}")
             telefono = tel_actual
 
-        producto = st.selectbox("Producto", PRODUCTOS)
+        producto = st.selectbox("Producto", productos_actuales)
+        costo_unit, precio_unit_config = get_precios_desde_config(config, producto)
+
         cantidad = st.number_input("Cantidad", min_value=1, step=1)
+        precio_unit = st.number_input(
+            "Precio de venta ($)",
+            min_value=0.0,
+            value=float(precio_unit_config),
+            step=1000.0
+        )
         estado_pago = st.selectbox("Estado del pago", ["pagado", "pendiente"])
         abono_inicial = 0.0
         if estado_pago == "pendiente":
@@ -498,8 +595,6 @@ elif menu == "💰 Registrar Venta":
         elif inv_dict.get(producto, 0) < cantidad:
             st.error(f"No hay suficiente inventario. Tenés {inv_dict.get(producto, 0)} unidades de {producto}.")
         else:
-            precio_unit = precios_venta[producto]
-            costo_unit = precios_costo[producto]
             ganancia = (precio_unit - costo_unit) * cantidad
             fecha = datetime.now().strftime("%Y-%m-%d %H:%M")
             total_venta = precio_unit * cantidad
@@ -541,25 +636,13 @@ elif menu == "🌸 Registrar Venta Flor":
             telefono = tel_actual
 
         tipo_flor = st.selectbox("Tipo de flor", TIPOS_FLOR)
-
-        # Precio y costo sugerido según tipo
         costo_key, precio_key = FLORES_CONFIG_KEY[tipo_flor]
         precio_sugerido = cfg_flores.get(precio_key, 0.0)
         costo_sugerido = cfg_flores.get(costo_key, 0.0)
 
         cantidad = st.number_input("Cantidad", min_value=1, step=1)
-        precio_unitario = st.number_input(
-            "Precio de venta por unidad ($)",
-            min_value=0.0,
-            value=precio_sugerido,
-            step=1000.0
-        )
-        costo_unitario = st.number_input(
-            "Costo de materiales por unidad ($)",
-            min_value=0.0,
-            value=costo_sugerido,
-            step=1000.0
-        )
+        precio_unitario = st.number_input("Precio de venta por unidad ($)", min_value=0.0, value=precio_sugerido, step=1000.0)
+        costo_unitario = st.number_input("Costo de materiales por unidad ($)", min_value=0.0, value=costo_sugerido, step=1000.0)
         estado_pago = st.selectbox("Estado del pago", ["pagado", "pendiente"])
         abono_inicial = 0.0
         if estado_pago == "pendiente":
@@ -670,7 +753,6 @@ elif menu == "👥 Clientes":
         idx_precio = headers.index("precio_unitario_venta") if "precio_unitario_venta" in headers else 5
         idx_abonado = headers.index("abonado") if "abonado" in headers else None
 
-        headers_f = ventas_flores_raw[0] if ventas_flores_raw else []
         filas_f = ventas_flores_raw[1:] if len(ventas_flores_raw) > 1 else []
 
         for cliente in clientes:
@@ -734,11 +816,13 @@ elif menu == "👥 Clientes":
                                 ventas_ws.update_cell(fila_real, idx_estado + 1, nuevo_estado)
                                 if idx_abonado is not None:
                                     ventas_ws.update_cell(fila_real, idx_abonado + 1, nuevo_abonado)
+                                limpiar_cache()
                                 st.success("Actualizado.")
                                 st.rerun()
                             if cb.button("🗑️", key=f"b_{fila_real}", use_container_width=True):
                                 actualizar_inventario(sheet, f[idx_producto], cant, datetime.now().strftime("%Y-%m-%d %H:%M"))
                                 ventas_ws.delete_rows(fila_real)
+                                limpiar_cache()
                                 st.success("Borrado.")
                                 st.rerun()
 
@@ -770,10 +854,12 @@ elif menu == "👥 Clientes":
                             if cg2.button("💾", key=f"gf_{fila_real_f}", use_container_width=True):
                                 ventas_flores_ws.update_cell(fila_real_f, 7, nuevo_estado_f)
                                 ventas_flores_ws.update_cell(fila_real_f, 8, nuevo_abonado_f)
+                                limpiar_cache()
                                 st.success("Actualizado.")
                                 st.rerun()
                             if cb2.button("🗑️", key=f"bf_{fila_real_f}", use_container_width=True):
                                 ventas_flores_ws.delete_rows(fila_real_f)
+                                limpiar_cache()
                                 st.success("Borrado.")
                                 st.rerun()
 
@@ -785,11 +871,12 @@ elif menu == "⏳ Pedidos Pendientes":
     st.caption("Clientes que encargaron pero aún no se les ha entregado.")
 
     pedidos = get_pedidos(sheet)
+    productos_actuales = get_productos_inventario(sheet)
 
     with st.expander("➕ Agregar pedido nuevo"):
         with st.form("form_pedido"):
             cliente_p = st.text_input("Nombre del cliente")
-            producto_p = st.selectbox("Producto", PRODUCTOS + TIPOS_FLOR)
+            producto_p = st.selectbox("Producto", productos_actuales + TIPOS_FLOR)
             cantidad_p = st.number_input("Cantidad", min_value=1, step=1)
             submitted_p = st.form_submit_button("Guardar pedido", use_container_width=True)
 
@@ -799,6 +886,7 @@ elif menu == "⏳ Pedidos Pendientes":
             else:
                 fecha_p = datetime.now().strftime("%Y-%m-%d %H:%M")
                 sheet.worksheet("PEDIDOS_PENDIENTES").append_row([fecha_p, cliente_p, producto_p, int(cantidad_p)])
+                limpiar_cache()
                 st.success("✅ Pedido guardado.")
                 st.rerun()
 
@@ -815,5 +903,6 @@ elif menu == "⏳ Pedidos Pendientes":
             col3.write(f"{pedido['cantidad']} unid.")
             if col4.button("✅", key=f"entregar_{i}", help="Marcar como entregado"):
                 pedidos_ws.delete_rows(i + 2)
+                limpiar_cache()
                 st.success(f"Pedido de {pedido['cliente']} entregado. Registrá la venta.")
                 st.rerun()
