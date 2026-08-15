@@ -79,8 +79,8 @@ def check_password():
         st.markdown("### Acceso privado")
 
         USUARIOS = {
-            "daniel": "daniel2026",
-            "darcy": "natural2026"
+            "Denstron": "danieL12",
+            "Darcy": "Darcy12"
         }
 
         usuario = st.text_input("Usuario")
